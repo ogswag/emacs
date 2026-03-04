@@ -1,5 +1,7 @@
 ;;; post-init.el --- post init -*- no-byte-compile: t; lexical-binding: t; -*-
+;;; CODE:
 
+;;; General settings (mostly builtin)
 (load custom-file 'noerror 'no-message)
 
 (setq display-buffer-base-action '((display-buffer-reuse-window display-buffer-use-some-window)))
@@ -104,7 +106,7 @@
   :ensure nil
   :custom
   (uniquify-buffer-name-style 'reverse)
-  (uniquify-separator "★")
+  (uniquify-separator "✦")
   (uniquify-after-kill-buffer-p t))
 
 ;; dired: Group directories first
@@ -134,7 +136,7 @@
 (setq tooltip-short-delay 0.08) ; Delay before showing a short tooltip (Default: 0.1)
 (tooltip-mode 1)
 
-
+;;; exec-path-from-shell
 (use-package exec-path-from-shell
   :if (and (or (display-graphic-p) (daemonp))
            (eq system-type 'darwin)) ; macOS only
@@ -155,6 +157,7 @@
   ;; Initialize
   (exec-path-from-shell-initialize))
 
+;;; Compile Angel
 (use-package compile-angel
   :demand t
   :ensure t
@@ -182,6 +185,7 @@
   ;; (compile-angel-on-load-mode 1)
   )
 
+;;; Show where the cursor is interactively, inactive region and region changes (beacon, goggles, show-inactive-region)
 (use-package beacon
   :ensure t
   :config (beacon-mode t))
@@ -196,21 +200,6 @@
   :config
   (goggles-mode))
 
-(use-package goto-chg
-  :ensure t)
-
-(use-package goto-last-point
-  :ensure t
-  :config (goto-last-point-mode))
-
-(use-package move-dup
-  :ensure t)
-
-(use-package surround
-  :ensure t
-  :bind-keymap ("M-'" . surround-keymap))
-
-
 (use-package show-inactive-region
   ;; Emacs minor mode to highlight the inactive region (between point and mark).
   :ensure t
@@ -223,6 +212,24 @@
 (add-hook 'text-mode-hook #'show-inactive-region-mode)
 (add-hook 'LaTeX-mode-hook #'show-inactive-region-mode)
 
+;;; Goto last cursor places (goto-change, goto-last-point)
+(use-package goto-chg
+  :ensure t)
+
+(use-package goto-last-point
+  :ensure t
+  :config (goto-last-point-mode))
+
+;;; Duplicate lines
+(use-package move-dup
+  :ensure t)
+
+;;; Surround
+(use-package surround
+  :ensure t
+  :bind-keymap ("M-'" . surround-keymap))
+
+;;; Install supplemetary packages for formatting, LSP, typechecking, etc. (mason)
 (use-package mason
   :ensure t
   :config
@@ -233,6 +240,8 @@
     (unless (mason-installed-p pkg)
       (ignore-errors (mason-install pkg)))))
 
+
+;;; Treesitter
 (use-package treesit-auto
   :ensure t
   :custom
@@ -264,7 +273,69 @@
 ;; Set the maximum level of syntax highlighting for Tree-sitter modes
 (setq treesit-font-lock-level 4)
 
-;; Support for Git files (.gitconfig, .gitignore, .gitattributes...)
+
+;; Intelligent code folding by leveraging the structural understanding of the
+;; built-in tree-sitter parser.
+(use-package treesit-fold
+  :commands (treesit-fold-close
+             treesit-fold-close-all
+             treesit-fold-open
+             treesit-fold-toggle
+             treesit-fold-open-all
+             treesit-fold-mode
+             global-treesit-fold-mode
+             treesit-fold-open-recursively
+             treesit-fold-line-comment-mode)
+
+  :custom
+  (treesit-fold-line-count-show t))
+(global-treesit-fold-indicators-mode t)
+(add-hook 'python-ts-mode-hook #'treesit-fold-mode)
+
+;;; Themes
+(use-package doom-themes
+  :ensure t)
+
+(setq modus-themes-italic-constructs nil
+      modus-themes-bold-constructs t)
+
+(setq-default modus-operandi-palette-overrides
+              '((bg-prose-block-contents bg-diff-context)
+                (bg-prose-block-delimiter bg-tab-bar)
+                (fg-prose-block-delimiter "gray22")
+                (comment red)))
+
+
+;; Fix org block extend
+(defun my/fix-org-block-extend (&rest _args)
+  (dolist (face '(org-block-begin-line org-block-end-line))
+    (when (facep face)
+      (set-face-attribute face nil :extend nil))))
+
+(defun my/set-theme-by-time ()
+  "Load a light theme between 6:00 and 18:00, and a dark theme otherwise."
+  (interactive)
+  (let* ((hour (string-to-number (format-time-string "%H")))
+         (light-theme 'modus-operandi)
+         (dark-theme  'doom-tokyo-night)
+         (now-light?  (and (>= hour 6) (< hour 18)))
+         (target-theme (if now-light? light-theme dark-theme)))
+
+    ;; Only reload if the target theme isn't already the top active one
+    (unless (eq (car custom-enabled-themes) target-theme)
+      ;; Disable all currently active themes to ensure a clean switch
+      (mapc #'disable-theme custom-enabled-themes)
+      (if (eq dark-theme target-theme)
+          (progn
+            (load-theme target-theme t)
+            (my/fix-org-block-extend))
+        (load-theme target-theme t))
+      (message "Switched to %s theme" target-theme)
+      )))
+;; Run the check every N seconds
+(run-at-time nil 300 #'my/set-theme-by-time)
+
+;;; Git files support (.gitconfig, .gitignore, .gitattributes...)
 (use-package git-modes
   :ensure t
   :commands (gitattributes-mode
@@ -286,8 +357,7 @@
          ("/info/attributes\\'" . gitattributes-mode)
          ("/git/attributes\\'" . gitattributes-mode)))
 
-;; Support for YAML files.
-;;
+;;; YAML support
 ;; NOTE: Prefer the tree-sitter-based yaml-ts-mode over yaml-mode when
 ;; available, as it provides more accurate syntax parsing and enhanced editing
 ;; features.
@@ -297,8 +367,7 @@
   :mode (("\\.yaml\\'" . yaml-mode)
          ("\\.yml\\'" . yaml-mode)))
 
-;; Support for Dockerfile files.
-;;
+;;; Dockerfile support
 ;; NOTE: Prefer the tree-sitter-based dockerfile-ts-mode over dockerfile-mode
 ;; when available, as it provides more accurate syntax parsing and enhanced
 ;; editing features.
@@ -307,13 +376,13 @@
   :commands dockerfile-mode
   :mode ("Dockerfile\\'" . dockerfile-mode))
 
-;; Support for Gnuplot files
+;;; Support for Gnuplot files
 (use-package gnuplot
   :ensure t
   :commands gnuplot-mode
   :mode ("\\.gp\\'" . gnuplot-mode))
 
-;; Jinja2 template support for files commonly used in configuration management
+;;; Jinja2 template support for files commonly used in configuration management
 ;; systems and web frameworks. This mode enables syntax highlighting and basic
 ;; editing facilities for templates written using the Jinja2 templating
 ;; language.
@@ -322,7 +391,7 @@
   :commands jinja2-mode
   :mode ("\\.j2\\'" . jinja2-mode))
 
-;; CSV file support with automatic column alignment. This configuration enables
+;;; CSV file support with automatic column alignment. This configuration enables
 ;; csv-align-mode whenever a CSV file is opened, improving readability by
 ;; keeping columns visually aligned according to a configurable maximum width
 ;; and a set of recognized field separators.
@@ -764,9 +833,9 @@
   ;; Tidy shadowed file names
   :hook (rfn-eshadow-update-overlay . vertico-directory-tidy))
 
-;;;; Vertico leverages Orderless' flexible matching capabilities, allowing users
-;; to input multiple patterns separated by spaces, which Orderless then
-;; matches in any order against the candidates.
+;;;; Orderless + Vertico = flexible matching capabilities
+;; allowing users to input multiple patterns separated by spaces, which
+;; Orderless then matches in any order against the candidates.
 (use-package orderless
   :ensure t
   :custom
@@ -1004,73 +1073,7 @@
   :custom
   (markdown-toc-header-toc-title "**Table of Contents**"))
 
-
-;; Intelligent code folding by leveraging the structural understanding of the
-;; built-in tree-sitter parser. Unlike traditional folding methods that rely on
-;; regular expressions or indentation, treesit-fold uses the actual syntax tree
-;; of the code to accurately identify foldable regions such as functions,
-;; classes, comments, and documentation strings. This allows for faster and more
-;; precise folding behavior that respects the grammar of the programming
-;; language, ensuring that fold boundaries are always syntactically correct even
-;; in complex or nested code structures.
-(use-package treesit-fold
-  :commands (treesit-fold-close
-             treesit-fold-close-all
-             treesit-fold-open
-             treesit-fold-toggle
-             treesit-fold-open-all
-             treesit-fold-mode
-             global-treesit-fold-mode
-             treesit-fold-open-recursively
-             treesit-fold-line-comment-mode)
-
-  :custom
-  (treesit-fold-line-count-show t))
-(global-treesit-fold-indicators-mode t)
-(add-hook 'python-ts-mode-hook #'treesit-fold-mode)
-
-(use-package doom-themes
-  :ensure t)
-
-(setq modus-themes-italic-constructs nil
-      modus-themes-bold-constructs t)
-
-(setq-default modus-operandi-palette-overrides
-              '((bg-prose-block-contents bg-diff-context)
-                (bg-prose-block-delimiter bg-tab-bar)
-                (fg-prose-block-delimiter "gray22")
-                (comment red)))
-
-
-;; Same function as above
-(defun my/fix-org-block-extend (&rest _args)
-  (dolist (face '(org-block-begin-line org-block-end-line))
-    (when (facep face)
-      (set-face-attribute face nil :extend nil))))
-
-(defun my/set-theme-by-time ()
-  "Load a light theme between 6:00 and 18:00, and a dark theme otherwise."
-  (interactive)
-  (let* ((hour (string-to-number (format-time-string "%H")))
-         (light-theme 'modus-operandi)
-         (dark-theme  'doom-tokyo-night)
-         (now-light?  (and (>= hour 6) (< hour 18)))
-         (target-theme (if now-light? light-theme dark-theme)))
-
-    ;; Only reload if the target theme isn't already the top active one
-    (unless (eq (car custom-enabled-themes) target-theme)
-      ;; Disable all currently active themes to ensure a clean switch
-      (mapc #'disable-theme custom-enabled-themes)
-      (if (eq dark-theme target-theme)
-          (progn
-            (load-theme target-theme t)
-            (my/fix-org-block-extend))
-        (load-theme target-theme t))
-      (message "Switched to %s theme" target-theme)
-      )))
-;; Run the check every N seconds
-(run-at-time nil 300 #'my/set-theme-by-time)
-
+;;; Dumb-Jump - "jump to definition" package for 60+ languages
 (use-package dumb-jump
   :commands dumb-jump-xref-activate
   :init
@@ -1155,6 +1158,7 @@
   :commands org-appear-mode
   :hook (org-mode . org-appear-mode))
 
+;;; Pretty icons
 (use-package nerd-icons
   :ensure t
   :demand t)
@@ -1175,6 +1179,7 @@
   :config
   (treemacs-nerd-icons-config))
 
+;;; Modern sidebar navigation for files and buffers (ibuffer-sidebar, treemacs)
 (use-package ibuffer-sidebar
   :ensure t
   :commands (ibuffer-sidebar-toggle-sidebar))
@@ -1285,6 +1290,7 @@
 (with-eval-after-load 'treemacs
   (define-key treemacs-mode-map [mouse-1] #'treemacs-single-click-expand-action))
 
+;;; Modern tab bar for Emacs (centaur-tabs)
 (use-package centaur-tabs
   :ensure t
   :custom
@@ -1398,6 +1404,7 @@
   :custom
   (helpful-max-buffers 7))
 
+;;; Avy
 (use-package avy
   :ensure t
   :commands (avy-goto-char
@@ -1437,21 +1444,22 @@
   (bufferfile-delete-switch-to 'parent-directory))
 
 
-;;; Enables automatic indentation of code while typing
+;;; Enables automatic indentation of code while typing (aggressive-indent)
 (use-package aggressive-indent
   :ensure t
   :commands aggressive-indent-mode
   :hook
   (emacs-lisp-mode . aggressive-indent-mode))
 
-;;; Highlights function and variable definitions in Emacs Lisp mode
+;;; Elisp quality of life improvements
+;;;; Highlights function and variable definitions in Emacs Lisp mode (highlight-defined)
 (use-package highlight-defined
   :ensure t
   :commands highlight-defined-mode
   :hook
   (emacs-lisp-mode . highlight-defined-mode))
 
-;;; Prevent parenthesis imbalance
+;;;; Prevent parenthesis imbalance
 (use-package paredit
   :ensure t
   :commands paredit-mode
@@ -1460,7 +1468,7 @@
   :config
   (define-key paredit-mode-map (kbd "RET") nil))
 
-;;; Displays visible indicators for page breaks
+;;;; Displays visible indicators for page breaks
 (use-package page-break-lines
   :ensure t
   :commands (page-break-lines-mode
@@ -1468,7 +1476,7 @@
   :hook
   (emacs-lisp-mode . page-break-lines-mode))
 
-;;; Provides functions to find references to functions, macros, variables,
+;;;; Provides functions to find references to functions, macros, variables,
 ;; special forms, and symbols in Emacs Lisp
 (use-package elisp-refs
   :ensure t
@@ -1477,7 +1485,6 @@
              elisp-refs-variable
              elisp-refs-special
              elisp-refs-symbol))
-
 
 ;;; `vterm'
 ;; is an Emacs terminal emulator that provides a fully interactive shell
@@ -1517,3 +1524,210 @@
   (setq vterm-timer-delay 0.05)  ; Faster vterm
   (setq vterm-kill-buffer-on-exit t)
   (setq vterm-max-scrollback 5000))
+
+;;; LaTeX setup
+;;; latex.el --- fast latex input -*- no-byte-compile: t; lexical-binding: t; -*-
+;; This elisp code uses use-package, a macro to simplify configuration. It will
+;; install it if it's not available, so please edit the following code as
+;; appropriate before running it.
+
+;; AucTeX settings - almost no changes
+(use-package latex
+  :ensure auctex
+  :hook ((LaTeX-mode . prettify-symbols-mode))
+  :bind (:map LaTeX-mode-map
+              ("C-S-e" . latex-math-from-calc))
+  :custom
+  (prettify-symbols-unprettify-at-point t)
+  :config
+  ;; Format math as a Latex string with Calc
+  (defun latex-math-from-calc ()
+    "Evaluate `calc' on the contents of line at point."
+    (interactive)
+    (cond ((region-active-p)
+           (let* ((beg (region-beginning))
+                  (end (region-end))
+                  (string (buffer-substring-no-properties beg end)))
+             (kill-region beg end)
+             (insert (calc-eval `(,string calc-language latex
+                                          calc-prefer-frac t
+                                          calc-angle-mode rad)))))
+          (t (let ((l (thing-at-point 'line)))
+               (end-of-line 1) (kill-line 0)
+               (insert (calc-eval `(,l
+                                    calc-language latex
+                                    calc-prefer-frac t
+                                    calc-angle-mode rad))))))))
+
+
+(use-package preview
+  :ensure nil
+  :after latex
+  :hook ((LaTeX-mode . preview-larger-previews))
+  :custom
+  (preview-bb-filesize 4096)
+  (preview-TeX-bb-border 2)
+  ;; (preview-prefer-TeX-bb t)
+  :config
+  (defun preview-larger-previews ()
+    (setq preview-scale-function
+          (lambda () (* 0.7
+                        (funcall (preview-scale-from-face)))))))
+
+(setq org-preview-latex-default-process 'dvisvgm) ; No blur when scaling
+
+(defun my/text-scale-adjust-latex-previews ()
+  "Adjust the size of latex preview fragments when changing the
+buffer's text scale."
+  (pcase major-mode
+    ('LaTeX-mode
+     (dolist (ov (overlays-in (point-min) (point-max)))
+       (if (eq (overlay-get ov 'category)
+               'preview-overlay)
+           (my/text-scale--resize-fragment ov))))
+    ('org-mode
+     (dolist (ov (overlays-in (point-min) (point-max)))
+       (if (eq (overlay-get ov 'org-overlay-type)
+               'org-latex-overlay)
+           (my/text-scale--resize-fragment ov))))))
+
+(defun my/text-scale--resize-fragment (ov)
+  (overlay-put
+   ov 'display
+   (cons 'image
+         (plist-put
+          (cdr (overlay-get ov 'display))
+          :scale (+ 1.0 (* 0.25 text-scale-mode-amount))))))
+
+(add-hook 'text-scale-mode-hook #'my/text-scale-adjust-latex-previews)
+
+;; CDLatex settings
+(use-package cdlatex
+  :ensure t
+  :hook (LaTeX-mode . turn-on-cdlatex)
+  :bind (:map cdlatex-mode-map
+              ("<tab>" . cdlatex-tab)))
+
+;; Array/tabular input with org-tables and cdlatex
+(use-package org-table
+  :ensure nil
+  :after cdlatex
+  :bind (:map orgtbl-mode-map
+              ("<tab>" . lazytab-org-table-next-field-maybe)
+              ("TAB" . lazytab-org-table-next-field-maybe))
+  :init
+  (add-hook 'cdlatex-tab-hook 'lazytab-cdlatex-or-orgtbl-next-field 90)
+  ;; Tabular environments using cdlatex
+  (add-to-list 'cdlatex-command-alist '("smat" "Insert smallmatrix env"
+                                        "\\left( \\begin{smallmatrix} ? \\end{smallmatrix} \\right)"
+                                        lazytab-position-cursor-and-edit
+                                        nil nil t))
+  (add-to-list 'cdlatex-command-alist '("bmat" "Insert bmatrix env"
+                                        "\\begin{bmatrix} ? \\end{bmatrix}"
+                                        lazytab-position-cursor-and-edit
+                                        nil nil t))
+  (add-to-list 'cdlatex-command-alist '("pmat" "Insert pmatrix env"
+                                        "\\begin{pmatrix} ? \\end{pmatrix}"
+                                        lazytab-position-cursor-and-edit
+                                        nil nil t))
+  (add-to-list 'cdlatex-command-alist '("tbl" "Insert table"
+                                        "\\begin{table}\n\\centering ? \\caption{}\n\\end{table}\n"
+                                        lazytab-position-cursor-and-edit
+                                        nil t nil))
+
+  )
+;; Tab handling in org tables
+(defun lazytab-position-cursor-and-edit ()
+  ;; (if (search-backward "\?" (- (point) 100) t)
+  ;;     (delete-char 1))
+  (cdlatex-position-cursor)
+  (lazytab-orgtbl-edit))
+
+(defun lazytab-orgtbl-edit ()
+  (advice-add 'orgtbl-ctrl-c-ctrl-c :after #'lazytab-orgtbl-replace)
+  (orgtbl-mode 1)
+  (open-line 1)
+  (insert "\n|"))
+
+(defun lazytab-orgtbl-replace (_)
+  (interactive "P")
+  (unless (org-at-table-p) (user-error "Not at a table"))
+  (let* ((table (org-table-to-lisp))
+         params
+         (replacement-table
+          (if (texmathp)
+              (lazytab-orgtbl-to-amsmath table params)
+            (orgtbl-to-latex table params))))
+    (kill-region (org-table-begin) (org-table-end))
+    (open-line 1)
+    (push-mark)
+    (insert replacement-table)
+    (align-regexp (region-beginning) (region-end) "\\([:space:]*\\)& ")
+    (orgtbl-mode -1)
+    (advice-remove 'orgtbl-ctrl-c-ctrl-c #'lazytab-orgtbl-replace)))
+
+(defun lazytab-orgtbl-to-amsmath (table params)
+  (orgtbl-to-generic
+   table
+   (org-combine-plists
+    '(:splice t
+              :lstart ""
+              :lend " \\\\"
+              :sep " & "
+              :hline nil
+              :llend "")
+    params)))
+
+(defun lazytab-cdlatex-or-orgtbl-next-field ()
+  (when (and (bound-and-true-p orgtbl-mode)
+             (org-table-p)
+             (looking-at "[[:space:]]*\\(?:|\\|$\\)")
+             (let ((s (thing-at-point 'sexp)))
+               (not (and s (assoc s cdlatex-command-alist-comb)))))
+    (call-interactively #'org-table-next-field)
+    t))
+
+(defun lazytab-org-table-next-field-maybe ()
+  (interactive)
+  (if (bound-and-true-p cdlatex-mode)
+      (cdlatex-tab)
+    (org-table-next-field)))
+
+;;; Colorize strings that are plain-text colors (colorful mode)
+(use-package colorful-mode
+  :ensure t
+  :custom
+  (colorful-use-prefix t)
+  (colorful-only-strings 'only-prog)
+  (css-fontify-colors nil)
+  :config
+  (global-colorful-mode t)
+  (add-to-list 'global-colorful-modes 'helpful-mode))
+
+;;; quickrun.el - quickly run most code file
+(use-package quickrun
+  :ensure t)
+;; Configure it like this:
+;; ;; Use this parameter as C++ default
+;; (quickrun-add-command "c++/c1z"
+;;   '((:command . "g++")
+;;     (:exec    . ("%c -std=c++1z %o -o %e %s"
+;;                  "%e %a"))
+;;     (:remove  . ("%e")))
+;;   :default "c++")
+;;
+;; ;; Use this parameter in pod-mode
+;; (quickrun-add-command "pod"
+;;   '((:command . "perldoc")
+;;     (:exec    . "%c -T -F %s"))
+;;   :mode 'pod-mode)
+;;
+;; ;; You can override existing command
+;; (quickrun-add-command "c/gcc"
+;;   '((:exec . ("%c -std=c++1z %o -o %e %s"
+;;               "%e %a")))
+;;   :override t)
+
+;;; casual.el - A collection of opinionated keyboard-driven user interfaces for various built-in Emacs modes.
+(use-package casual
+  :ensure t)
