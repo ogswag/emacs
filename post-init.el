@@ -1155,6 +1155,29 @@
   :commands org-appear-mode
   :hook (org-mode . org-appear-mode))
 
+(use-package nerd-icons
+  :ensure t
+  :demand t)
+
+(use-package nerd-icons-completion
+  :ensure t
+  :demand t
+  :config
+  (nerd-icons-completion-mode t))
+
+(use-package nerd-icons-corfu
+  :demand t
+  :ensure t)
+
+(use-package treemacs-nerd-icons
+  :ensure t
+  :demand t
+  :config
+  (treemacs-nerd-icons-config))
+
+(use-package ibuffer-sidebar
+  :ensure t
+  :commands (ibuffer-sidebar-toggle-sidebar))
 
 ;; A file and project explorer for Emacs that displays a structured tree
 ;; layout, similar to file browsers in modern IDEs. It functions as a sidebar
@@ -1273,7 +1296,6 @@
   (centaur-tabs-set-icons t)
   (centaur-tabs-icon-type 'all-the-icons)  ; or 'nerd-icons
   :config
-  (centaur-tabs-mode t)
   (defun centaur-tabs-buffer-groups ()
     "`centaur-tabs-buffer-groups' control buffers' group rules.
 
@@ -1354,41 +1376,10 @@
      (and (string-prefix-p "magit" name)
           (not (file-name-extension name)))
      )))
+(centaur-tabs-mode t)
 
-(use-package nerd-icons
-  :ensure t
-  :demand t)
-
-(use-package nerd-icons-completion
-  :after corfu
-  :ensure t
-  :demand t
-  :config
-  (nerd-icons-completion-mode t))
-
-(use-package nerd-icons-corfu
-  :after corfu
-  :demand t
-  :ensure t)
-
-(use-package treemacs-nerd-icons
-  :after treemacs
-  :ensure t
-  :demand t
-  :config
-  (treemacs-nerd-icons-config))
-
-(use-package ibuffer-sidebar
-  :ensure t
-  :commands (ibuffer-sidebar-toggle-sidebar)
-  :config
-  ;; (setq ibuffer-sidebar-use-custom-font t)
-  ;; (setq ibuffer-sidebar-face `(:family "Helvetica" :height 140)))
-  )
-
-
-
-;; Helpful is an alternatilsve to the built-in Emacs help that provides much more
+;;; Helpful
+;; is an alternative to the built-in Emacs help that provides much more
 ;; contextual information.
 (use-package helpful
   :ensure t
@@ -1416,7 +1407,7 @@
   (global-set-key (kbd "M-RET") 'avy-goto-char))
 
 
-;; bufferfile.el package provides helper functions to delete, rename, or copy buffer files:
+;;; bufferfile.el package provides helper functions to delete, rename, or copy buffer files:
 ;;
 ;; bufferfile-rename: Renames the file visited by the current buffer, ensures
 ;; that the destination directory exists, and updates the buffer name for all
@@ -1446,21 +1437,21 @@
   (bufferfile-delete-switch-to 'parent-directory))
 
 
-;; Enables automatic indentation of code while typing
+;;; Enables automatic indentation of code while typing
 (use-package aggressive-indent
   :ensure t
   :commands aggressive-indent-mode
   :hook
   (emacs-lisp-mode . aggressive-indent-mode))
 
-;; Highlights function and variable definitions in Emacs Lisp mode
+;;; Highlights function and variable definitions in Emacs Lisp mode
 (use-package highlight-defined
   :ensure t
   :commands highlight-defined-mode
   :hook
   (emacs-lisp-mode . highlight-defined-mode))
 
-;; Prevent parenthesis imbalance
+;;; Prevent parenthesis imbalance
 (use-package paredit
   :ensure t
   :commands paredit-mode
@@ -1469,7 +1460,7 @@
   :config
   (define-key paredit-mode-map (kbd "RET") nil))
 
-;; Displays visible indicators for page breaks
+;;; Displays visible indicators for page breaks
 (use-package page-break-lines
   :ensure t
   :commands (page-break-lines-mode
@@ -1477,7 +1468,7 @@
   :hook
   (emacs-lisp-mode . page-break-lines-mode))
 
-;; Provides functions to find references to functions, macros, variables,
+;;; Provides functions to find references to functions, macros, variables,
 ;; special forms, and symbols in Emacs Lisp
 (use-package elisp-refs
   :ensure t
@@ -1488,7 +1479,8 @@
              elisp-refs-symbol))
 
 
-;; `vterm' is an Emacs terminal emulator that provides a fully interactive shell
+;;; `vterm'
+;; is an Emacs terminal emulator that provides a fully interactive shell
 ;; experience within Emacs, supporting features such as color, cursor movement,
 ;; and advanced terminal capabilities. Unlike standard Emacs terminal modes,
 ;; `vterm' utilizes the libvterm C library for high-performance emulation. This
