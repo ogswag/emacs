@@ -306,6 +306,10 @@
 (use-package doom-themes
   :ensure t)
 
+(use-package doom-modeline
+  :ensure t
+  :config (doom-modeline-mode t))
+
 (setq modus-themes-italic-constructs nil
       modus-themes-bold-constructs t)
 
@@ -314,7 +318,6 @@
                 (bg-prose-block-delimiter bg-tab-bar)
                 (fg-prose-block-delimiter "gray22")
                 (comment red)))
-
 
 ;; Fix org block extend
 (defun my/fix-org-block-extend (&rest _args)
