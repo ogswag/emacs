@@ -73,7 +73,7 @@
     (set-frame-font "Consolas" t t)))
  ((eq system-type 'darwin) ; macOS
   (when (member "JetBrainsMono Nerd Font" (font-family-list))
-    (set-frame-font "JetBrainsMono Nerd Font 12" t t)
+    (set-frame-font "JetBrainsMono Nerd Font 14" t t)
     (set-face-attribute 'fixed-pitch nil :family "JetBrainsMono Nerd Font")
     (set-face-attribute 'variable-pitch nil :family "Verdana")))
  ((eq system-type 'gnu/linux)
@@ -135,6 +135,16 @@
 (setq tooltip-delay 0.4)        ; Delay before showing a tooltip after mouse hover (default: 0.7)
 (setq tooltip-short-delay 0.08) ; Delay before showing a short tooltip (Default: 0.1)
 (tooltip-mode 1)
+
+(add-hook 'before-save-hook 'delete-trailing-whitespace)
+(add-hook 'LaTeX-mode-hook
+          (lambda () (setq-local show-trailing-whitespace t)))
+(add-hook 'text-mode-hook
+          (lambda () (setq-local show-trailing-whitespace t)))
+(add-hook 'prog-mode-hook
+          (lambda () (setq-local show-trailing-whitespace t)))
+
+(hl-line-mode t)
 
 ;;; exec-path-from-shell
 (use-package exec-path-from-shell
@@ -316,7 +326,7 @@
   "Load a light theme between 6:00 and 18:00, and a dark theme otherwise."
   (interactive)
   (let* ((hour (string-to-number (format-time-string "%H")))
-         (light-theme 'modus-operandi)
+         (light-theme 'doom-tokyo-night)
          (dark-theme  'doom-tokyo-night)
          (now-light?  (and (>= hour 6) (< hour 18)))
          (target-theme (if now-light? light-theme dark-theme)))
@@ -669,8 +679,9 @@
 (apheleia-global-mode t)
 
 ;;; Misc
-(use-package rainbow-mode
+(use-package rainbow-delimiters
   :ensure t)
+(rainbow-delimiters-mode t)
 
 (use-package golden-ratio
   :ensure t)
@@ -1081,7 +1092,7 @@
   ;; `xref-find-definitions'. A priority of 90 ensures it is used only when no
   ;; more specific backend is available.
   (add-hook 'xref-backend-functions #'dumb-jump-xref-activate 90)
-
+  (setq xref-show-definitions-function #'consult-xref)
   (setq dumb-jump-aggressive nil)
   ;; (setq dumb-jump-quiet t)
 
@@ -1112,17 +1123,7 @@
 ;; Set multiple languages
 (setq jinx-languages "en_US ru-yo")
 
-
-;;; General text editing packages and config
-(add-hook 'before-save-hook 'delete-trailing-whitespace)
-(add-hook 'LaTeX-mode-hook
-          (lambda () (setq-local show-trailing-whitespace t)))
-(add-hook 'text-mode-hook
-          (lambda () (setq-local show-trailing-whitespace t)))
-(add-hook 'prog-mode-hook
-          (lambda () (setq-local show-trailing-whitespace t)))
-
-
+;;; Git diffs (diff-hl)
 (use-package diff-hl
   :commands (diff-hl-mode
              global-diff-hl-mode)
@@ -1133,6 +1134,7 @@
   (setq diff-hl-update-async t)  ; Do not block Emacs
   (setq diff-hl-global-modes '(not pdf-view-mode image-mode)))
 
+;;; Org mode
 ;; Org mode is a major mode designed for organizing notes, planning, task
 ;; management, and authoring documents using plain text with a simple and
 ;; expressive markup syntax. It supports hierarchical outlines, TODO lists,
@@ -1300,7 +1302,7 @@
   (centaur-tabs-modified-marker "*")
   (centaur-tabs-height 16)
   (centaur-tabs-set-icons t)
-  (centaur-tabs-icon-type 'all-the-icons)  ; or 'nerd-icons
+  (centaur-tabs-icon-type 'nerd-icons)
   :config
   (defun centaur-tabs-buffer-groups ()
     "`centaur-tabs-buffer-groups' control buffers' group rules.
@@ -1706,7 +1708,8 @@ buffer's text scale."
 
 ;;; quickrun.el - quickly run most code file
 (use-package quickrun
-  :ensure t)
+  :ensure t
+  :defer t)
 ;; Configure it like this:
 ;; ;; Use this parameter as C++ default
 ;; (quickrun-add-command "c++/c1z"
@@ -1731,3 +1734,42 @@ buffer's text scale."
 ;;; casual.el - A collection of opinionated keyboard-driven user interfaces for various built-in Emacs modes.
 (use-package casual
   :ensure t)
+
+;;; russian language
+(setq calendar-latitude 55.75     ; Moscow
+      calendar-longitude 37.62)
+
+;;;; Language input config
+(setq-default default-input-method 'russian-computer)
+(use-package reverse-im
+  :ensure t
+  :demand t
+  :custom
+  (reverse-im-input-methods '("russian-computer"))
+  :config
+  (reverse-im-mode t)
+  ;; On Linux with Fcitx/IBus, also configure native input method
+  (when (eq system-type 'gnu/linux)
+    ;; Try to use IBus if available
+    (if-let* ((ibus-method (getenv "IBUS_ADDRESS")))
+        (message "IBus detected, using native input method")
+      ;; Fall back to reverse-im
+      (message "Using reverse-im for Russian input"))))
+
+;;; move to the beginning of comment, indentation, line (move where I mean)
+(use-package mwim
+  :ensure t)
+(keymap-global-unset "C-a")
+(keymap-global-unset "C-e")
+(keymap-global-set "C-a" #'mwim-beginning)
+(keymap-global-set "C-e" #'mwim-end)
+
+;;; Quickly generate linear ranges in Emacs (tiny)
+(use-package tiny
+  :ensure t
+  :defer t)
+
+;;; minor mode that guesses the indentation offset
+(use-package dtrt-indent
+  :ensure t
+  :defer t)
