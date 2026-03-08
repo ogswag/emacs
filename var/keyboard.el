@@ -92,10 +92,6 @@
 (keymap-global-set "C-s-," #'previous-buffer)
 (keymap-global-set "C-s-." #'next-buffer)
 
-(keymap-global-set "M-c l" #'consult-line)
-(keymap-global-set "M-c i" #'consult-imenu)
-(keymap-global-set "M-c o" #'consult-outline)
-
 ;;;; EDITING
 (keymap-global-set "M-s-<down-mouse-1>" #'mouse-drag-region-rectangle)
 
@@ -129,7 +125,7 @@
 (keymap-global-set "M-3" #'my/open-curdir)
 
 (keymap-global-set "C-," #'goto-last-change)
-(keymap-global-set "C-<" #'goto-last-change-reverse)
+9(keymap-global-set "C-<" #'goto-last-change-reverse)
 (keymap-global-set "C-'" #'goto-last-point)
 
 

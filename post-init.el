@@ -11,8 +11,7 @@
 
 ;; Enable automatic insertion and management of matching pairs of characters
 ;; (e.g., (), {}, "") globally using `electric-pair-mode'.
-(use-package elec-pair
-  :ensure nil
+(use-package elec-pair :ensure nil
   :commands (electric-pair-mode
              electric-pair-local-mode
              electric-pair-delete-pair)
@@ -25,8 +24,7 @@
 ;; if the selection is active.
 (delete-selection-mode 1)
 
-(use-package visual-line-mode
-  :ensure nil
+(use-package visual-line-mode :ensure nil
   :hook (LaTeX-mode latex-mode tex-mode eshell-mode text-mode helpful-mode help-mode))
 
 (global-visual-wrap-prefix-mode t)
@@ -38,14 +36,16 @@
 (setq mode-line-position-column-line-format '("%l:%C"))
 
 ;; Display of line numbers in the buffer:
-;; (setq-default display-line-numbers-type 'relative)
-(dolist (hook '(prog-mode-hook text-mode-hook))
-  (add-hook hook #'display-line-numbers-mode))
-(setq-default display-line-numbers-grow-only t)
-(setq-default display-line-numbers-width-start t)
+(use-package display-line-numbers :ensure nil
+  :demand t
+  :hook (prog-mode text-mode LaTeX-mode)
+  :custom
+  (display-line-numbers-grow-only t)
+  (display-line-numbers-width-start t)
+  ;; (display-line-numbers-type 'relative)
+  )
 
-(use-package which-key
-  :ensure nil ; builtin
+(use-package which-key :ensure nil ; builtin
   :commands which-key-mode
   :hook (after-init . which-key-mode)
   :custom
@@ -102,8 +102,7 @@
                               "*esh command on file*"))
 (add-hook 'after-init-hook #'winner-mode)
 
-(use-package uniquify
-  :ensure nil
+(use-package uniquify :ensure nil
   :custom
   (uniquify-buffer-name-style 'reverse)
   (uniquify-separator "✦")
@@ -144,13 +143,19 @@
 (add-hook 'prog-mode-hook
           (lambda () (setq-local show-trailing-whitespace t)))
 
-(hl-line-mode t)
+(global-hl-line-mode t)
+
+(setq woman-cache-filename "~/.emacs.d/var/wmncach.el")
+(setq woman-cache-level 3)
+
+;; Use zsh for shell commands and make it interactive
+(setq shell-file-name "zsh")
+(setq shell-command-switch "-ic")
 
 ;;; exec-path-from-shell
 (use-package exec-path-from-shell
   :if (and (or (display-graphic-p) (daemonp))
-           (eq system-type 'darwin)) ; macOS only
-  :ensure t
+           (eq system-type 'darwin)) ; macOS only :ensure t
   :demand t
   :functions exec-path-from-shell-initialize
   :config
@@ -169,8 +174,7 @@
 
 ;;; Compile Angel
 (use-package compile-angel
-  :demand t
-  :ensure t
+  :demand t :ensure t
   :config
   ;; The following disables compilation of packages during installation, compile-angel will handle it.
   (setq package-native-compile nil)
@@ -196,12 +200,10 @@
   )
 
 ;;; Show where the cursor is interactively, inactive region and region changes (beacon, goggles, show-inactive-region)
-(use-package beacon
-  :ensure t
+(use-package beacon :ensure t
   :config (beacon-mode t))
 
-(use-package goggles
-  :ensure t
+(use-package goggles :ensure t
   :hook ((prog-mode text-mode LaTeX-mode) . goggles-mode)
   :custom
   (goggles-pulse t)
@@ -211,37 +213,31 @@
   (goggles-mode))
 
 (use-package show-inactive-region
-  ;; Emacs minor mode to highlight the inactive region (between point and mark).
-  :ensure t
+  ;; Emacs minor mode to highlight the inactive region (between point and mark). :ensure t
   :commands (show-inactive-region-mode)
   :custom
   (show-inactive-region-fade-out 0.1)
-  (show-inactive-region-face-dynamic-factor 0.3))
+  (show-inactive-region-face-dynamic-factor 0.1))
 ;; (require 'show-inactive-region)
-(add-hook 'prog-mode-hook #'show-inactive-region-mode)
-(add-hook 'text-mode-hook #'show-inactive-region-mode)
-(add-hook 'LaTeX-mode-hook #'show-inactive-region-mode)
+;; (add-hook 'prog-mode-hook #'show-inactive-region-mode)
+;; (add-hook 'text-mode-hook #'show-inactive-region-mode)
+;; (add-hook 'LaTeX-mode-hook #'show-inactive-region-mode)
 
 ;;; Goto last cursor places (goto-change, goto-last-point)
-(use-package goto-chg
-  :ensure t)
+(use-package goto-chg :ensure t)
 
-(use-package goto-last-point
-  :ensure t
+(use-package goto-last-point :ensure t
   :config (goto-last-point-mode))
 
 ;;; Duplicate lines
-(use-package move-dup
-  :ensure t)
+(use-package move-dup :ensure t)
 
 ;;; Surround
-(use-package surround
-  :ensure t
+(use-package surround :ensure t
   :bind-keymap ("M-'" . surround-keymap))
 
 ;;; Install supplemetary packages for formatting, LSP, typechecking, etc. (mason)
-(use-package mason
-  :ensure t
+(use-package mason :ensure t
   :config
   (mason-setup))
 
@@ -252,8 +248,7 @@
 
 
 ;;; Treesitter
-(use-package treesit-auto
-  :ensure t
+(use-package treesit-auto :ensure t
   :custom
   (treesit-auto-install 'prompt)
   (treesit-auto-langs '(awk bash bibtex blueprint c-sharp clojure cmake commonlisp css
@@ -296,28 +291,194 @@
              global-treesit-fold-mode
              treesit-fold-open-recursively
              treesit-fold-line-comment-mode)
-
   :custom
   (treesit-fold-line-count-show t))
 (global-treesit-fold-indicators-mode t)
 (add-hook 'python-ts-mode-hook #'treesit-fold-mode)
 
 ;;; Themes
-(use-package doom-themes
-  :ensure t)
-
-(use-package doom-modeline
-  :ensure t
+(use-package doom-modeline :ensure t
   :config (doom-modeline-mode t))
 
 (setq modus-themes-italic-constructs nil
-      modus-themes-bold-constructs t)
+      modus-themes-bold-constructs nil
+      modus-themes-disable-other-themes t)
 
-(setq-default modus-operandi-palette-overrides
-              '((bg-prose-block-contents bg-diff-context)
-                (bg-prose-block-delimiter bg-tab-bar)
-                (fg-prose-block-delimiter "gray22")
-                (comment red)))
+(setq modus-operandi-palette-overrides
+      '((bg-prose-block-contents bg-diff-context)
+        (bg-prose-block-delimiter bg-tab-bar)
+        (fg-prose-block-delimiter "gray22")
+        (comment red)))
+
+(setq modus-vivendi-palette-overrides
+      '(;; Core Background and Foreground
+        (bg-main "#1a1b26")        ;; Editor background (Night)
+        (bg-dim "#13141c")         ;; Alternate/Dim background (bg-alt from source)
+        (bg-active "#24283b")      ;; Editor background (Storm) / Active elements
+        (bg-inactive "#16161e")    ;; Inactive panels
+        (fg-main "#a9b1d6")        ;; Editor foreground
+        (fg-alt "#c0caf5")         ;; Variables, Class names (base8)
+        (fg-dim "#565f89")         ;; Comments (dark-blue)
+        (fg-dim-alt "#9099c0")
+        ;; --- Semantic Colors (From Provided List) ---
+        (red                            "#f7768e")
+        (red-warmer                     "#e6785e")
+        (red-cooler                     "#e07888")
+        (red-faint                      "#e8b8ab")
+        (red-intense                    "#e65555")
+        (green                          "#9ece6a")
+        (green-warmer                   "#5ebc89")
+        (green-cooler                   "#73daca")
+        (green-faint                    "#7cc2a6")
+        (green-intense                  "#3cc9a4")
+        (yellow                         "#e0af68")
+        (yellow-warmer                  "#f0b060")
+        (yellow-cooler                  "#c0cf6a")
+        (yellow-faint                   "#e0d38c")
+        (yellow-intense                 "#f0c060")
+        (blue                           "#7aa2f7")
+        (blue-warmer                    "#9ab0f7")
+        (blue-cooler                    "#7dcfff")
+        (blue-faint                     "#c0d8eb")
+        (blue-intense                   "#5a9aff")
+        (magenta                        "#bb9af7")
+        (magenta-warmer                 "#f7a8d0")
+        (magenta-cooler                 "#9d7cd8")
+        (magenta-faint                  "#d8c0e8")
+        (magenta-intense                "#c07af7")
+        (cyan                           "#b4f9f8")
+        (cyan-warmer                    "#b3ffd9")
+        (cyan-cooler                    "#7de5ff")
+        (cyan-faint                     "#6ac4c3")
+        (cyan-intense                   "#2ac3de")
+        (orange                         "#ff9e64")
+        (rust                           "#c07a5a")
+        (gold                           "#c0a05b")
+        (olive                          "#a3bfa3")
+        (slate                          "#8099a0")
+        (indigo                         "#857ec5")
+        (maroon                         "#b569c0")
+        (pink                           "#d8c0e8")
+        (bg-red-intense                 "#9d1f1f")
+        (bg-green-intense               "#2f822f")
+        (bg-yellow-intense              "#7a6100")
+        (bg-blue-intense                "#1640b0")
+        (bg-magenta-intense             "#7030af")
+        (bg-cyan-intense                "#2266ae")
+        (bg-red-subtle                  "#620f2a")
+        (bg-green-subtle                "#00422a")
+        (bg-yellow-subtle               "#4a4000")
+        (bg-blue-subtle                 "#242679")
+        (bg-magenta-subtle              "#552f5f")
+        (bg-cyan-subtle                 "#004065")
+        (bg-red-nuanced                 "#3a0c14")
+        (bg-green-nuanced               "#092f1f")
+        (bg-yellow-nuanced              "#381d0f")
+        (bg-blue-nuanced                "#12154a")
+        (bg-magenta-nuanced             "#2f0c3f")
+        (bg-cyan-nuanced                "#042837")
+        (bg-clay                        "#3a1a1a")
+        (fg-clay                        "#ffb090")
+        (bg-ochre                       "#3a2a1a")
+        (fg-ochre                       "#e0c080")
+        (bg-lavender                    "#38325c")
+        (fg-lavender                    "#dfc0f0")
+        (bg-sage                        "#143e32")
+        (fg-sage                        "#c3e7d4")
+        (bg-graph-red-0                 "#f7768e")
+        (bg-graph-red-1                 "#43242b")
+        (bg-graph-green-0               "#9ece6a")
+        (bg-graph-green-1               "#293e2b")
+        (bg-graph-yellow-0              "#e0af68")
+        (bg-graph-yellow-1              "#c0a05b")
+        (bg-graph-blue-0                "#7aa2f7")
+        (bg-graph-blue-1                "#1e2a3a")
+        (bg-graph-magenta-0             "#bb9af7")
+        (bg-graph-magenta-1             "#2f2a4a")
+        (bg-graph-cyan-0                "#7dcfff")
+        (bg-graph-cyan-1                "#1e3a4a")
+        (bg-completion                  "#28344a")
+        (bg-hover                       "#3a4a4a")
+        (bg-hover-secondary             "#4a3a2a")
+        (bg-hl-line                     "#292e42")
+        (bg-region                      "#414868")
+        (fg-region                      "#c0caf5")
+        (bg-mode-line-active            "#1f2335")
+        (fg-mode-line-active            "#c0caf5")
+        (border-mode-line-active        "#565f89")
+        (bg-mode-line-inactive          "#1f2335")
+        (fg-mode-line-inactive          "#a9b1d6")
+        (border-mode-line-inactive      "#3b4261")
+        (modeline-err                   "#f7768e")
+        (modeline-warning               "#e0af68")
+        (modeline-info                  "#7dcfff")
+        (bg-tab-bar                     "#1f2335")
+        (bg-tab-current                 "#1a1b26")
+        (bg-tab-other                   "#24283b")
+        (bg-added                       "#273a2b")
+        (bg-added-faint                 "#1a2a1a")
+        (bg-added-refine                "#2a4a2a")
+        (bg-added-fringe                "#3a6a3a")
+        (fg-added                       "#c0e0c0")
+        (fg-added-intense               "#6fcf6f")
+        (bg-changed                     "#3a3a1a")
+        (bg-changed-faint               "#2a2a0a")
+        (bg-changed-refine              "#4a4a1a")
+        (bg-changed-fringe              "#6a5a1a")
+        (fg-changed                     "#e0c080")
+        (fg-changed-intense             "#c0a05b")
+        (bg-removed                     "#392a2e")
+        (bg-removed-faint               "#2a1a1a")
+        (bg-removed-refine              "#4a2a2a")
+        (bg-removed-fringe              "#5a2a2a")
+        (fg-removed                     "#ffb0b0")
+        (fg-removed-intense             "#ff768e")
+        (bg-diff-context                "#1a1b26")
+
+        (rainbow-0 fg-main)
+        (rainbow-1 blue)
+        (rainbow-2 orange)
+        (rainbow-3 green-cooler)
+        (rainbow-4 cyan-cooler)
+        (rainbow-5 yellow)
+        (rainbow-6 cyan-intense)
+        (rainbow-7 magenta-warmer)
+        (rainbow-8 blue-warmer)
+
+        (bg-paren-match magenta-intense)
+        (fg-paren-match bg-main)
+
+        (fg-prose-block-delimiter fg-dim)
+
+        (fringe unspecified)
+        (bg-line-number-inactive unspecified)
+        (border-mode-line-active unspecified)
+        (border-mode-line-inactive unspecified)
+
+        (string green)
+        (variable fg-main)
+        (variable-use fg-main)
+        (type fg-main)
+        (name blue)
+        (fname blue)
+        (fname-call blue)
+        (builtin red)
+        (docstring fg-dim-alt)
+        (keyword magenta)
+        (property blue-cooler)
+
+        (fg-prompt blue)
+        (fg-prose-code blue)
+        ;; headers -----------------------
+        (fg-heading-1 "#CADAFF")
+        (fg-heading-2 "#81ADFF")
+        (fg-heading-3 "#FFC9DB")
+        (fg-heading-4 "#FF79BA")
+        (fg-heading-5 "#FFD474")
+        (fg-heading-6 "#E0A200")
+        (fg-heading-7 "#15FDD6")
+        (fg-heading-8 "#00CBA2")
+        ))
 
 ;; Fix org block extend
 (defun my/fix-org-block-extend (&rest _args)
@@ -349,8 +510,7 @@
 (run-at-time nil 300 #'my/set-theme-by-time)
 
 ;;; Git files support (.gitconfig, .gitignore, .gitattributes...)
-(use-package git-modes
-  :ensure t
+(use-package git-modes :ensure t
   :commands (gitattributes-mode
              gitconfig-mode
              gitignore-mode)
@@ -374,8 +534,7 @@
 ;; NOTE: Prefer the tree-sitter-based yaml-ts-mode over yaml-mode when
 ;; available, as it provides more accurate syntax parsing and enhanced editing
 ;; features.
-(use-package yaml-mode
-  :ensure t
+(use-package yaml-mode :ensure t
   :commands yaml-mode
   :mode (("\\.yaml\\'" . yaml-mode)
          ("\\.yml\\'" . yaml-mode)))
@@ -384,14 +543,12 @@
 ;; NOTE: Prefer the tree-sitter-based dockerfile-ts-mode over dockerfile-mode
 ;; when available, as it provides more accurate syntax parsing and enhanced
 ;; editing features.
-(use-package dockerfile-mode
-  :ensure t
+(use-package dockerfile-mode :ensure t
   :commands dockerfile-mode
   :mode ("Dockerfile\\'" . dockerfile-mode))
 
 ;;; Support for Gnuplot files
-(use-package gnuplot
-  :ensure t
+(use-package gnuplot :ensure t
   :commands gnuplot-mode
   :mode ("\\.gp\\'" . gnuplot-mode))
 
@@ -399,8 +556,7 @@
 ;; systems and web frameworks. This mode enables syntax highlighting and basic
 ;; editing facilities for templates written using the Jinja2 templating
 ;; language.
-(use-package jinja2-mode
-  :ensure t
+(use-package jinja2-mode :ensure t
   :commands jinja2-mode
   :mode ("\\.j2\\'" . jinja2-mode))
 
@@ -408,8 +564,7 @@
 ;; csv-align-mode whenever a CSV file is opened, improving readability by
 ;; keeping columns visually aligned according to a configurable maximum width
 ;; and a set of recognized field separators.
-(use-package csv-mode
-  :ensure t
+(use-package csv-mode :ensure t
   :commands (csv-mode
              csv-align-mode
              csv-guess-set-separator)
@@ -425,8 +580,7 @@
 ;; NOTE: Prefer the tree-sitter-based go-ts-mode over go-mode
 ;; when available, as it provides more accurate syntax parsing and enhanced
 ;; editing features.
-(use-package go-mode
-  :ensure t
+(use-package go-mode :ensure t
   :commands go-mode
   :mode ("\\.go\\'" . go-mode))
 
@@ -465,66 +619,56 @@
 (add-hook 'python-mode-hook 'my/setup-python-mode)
 (add-hook 'python-ts-mode-hook 'my/setup-python-mode)
 
-(use-package indent-bars
-  :ensure t
+(use-package indent-bars :ensure t
   :hook ((python-mode python-ts-mode yaml-mode) . indent-bars-mode)) ; or whichever modes you prefer
 
 ;;; Support for Rust
-(use-package rust-mode
-  :ensure t
+(use-package rust-mode :ensure t
   :commands rust-mode
   :mode ("\\.rs\\'" . rust-mode)
   :custom
   (rust-indent-offset 2))
 
 ;;; Major mode for editing crontab files
-(use-package crontab-mode
-  :ensure t
+(use-package crontab-mode :ensure t
   :commands crontab-mode
   :mode ("/crontab\\(\\.X*[[:alnum:]]+\\)?\\'"  . crontab-mode))
 
 ;;; Major mode for editing Nginx configuration files
-(use-package nginx-mode
-  :ensure t
+(use-package nginx-mode :ensure t
   :commands nginx-mode
   :mode (("nginx\\.conf\\'" . nginx-mode)
          ("/nginx/.+\\.conf\\'" . nginx-mode)))
 
 ;;; Major mode for HashiCorp Configuration Language (HCL) files
-(use-package hcl-mode
-  :ensure t
+(use-package hcl-mode :ensure t
   :commands hcl-mode
   :mode ("\\.hcl\\'" . hcl-mode))
 
 ;;; Major mode for Nix expression language files
-(use-package nix-mode
-  :ensure t
+(use-package nix-mode :ensure t
   :commands nix-mode
   :mode ("\\.nix\\'" . nix-mode))
 
 ;;; Major mode for editing Fish shell scripts
-(use-package fish-mode
-  :ensure t
+(use-package fish-mode :ensure t
   :commands fish-mode
   :mode ("\\.fish\\'" . fish-mode))
 
 ;;; Vim configuration file support. This mode provides syntax highlighting and
 ;; editing support for various Vim configuration files, including vimrc, gvimrc,
 ;; local overrides, and project-specific configuration files.
-(use-package vimrc-mode
-  :ensure t
+(use-package vimrc-mode :ensure t
   :commands vimrc-mode
   :mode ("\\.vim\\(rc\\)?\\'" . vimrc-mode))
 
 ;;; Support for Jenkinsfile files
-(use-package jenkinsfile-mode
-  :ensure t
+(use-package jenkinsfile-mode :ensure t
   :commands jenkinsfile-mode
   :mode ("Jenkinsfile\\'" . jenkinsfile-mode))
 
 ;;; Support for Haskell
-(use-package haskell-mode
-  :ensure t
+(use-package haskell-mode :ensure t
   :commands haskell-mode
   :mode ("\\.hs\\'" . haskell-mode))
 
@@ -533,8 +677,7 @@
 (add-to-list 'auto-mode-alist '("\\.m\\'". octave-mode))
 
 ;;; C/C++
-(use-package doxymacs
-  :ensure t)
+(use-package doxymacs :ensure t)
 
 ;; Define a custom style matching your clang-format config
 (defconst llvm-allman-style
@@ -651,17 +794,34 @@
 (add-hook 'c++-mode-hook 'my/setup-c-style)
 
 ;;; Compilation setup
-(use-package fancy-compilation
-  :ensure t
+(use-package fancy-compilation :ensure t
   :commands (fancy-compilation-mode)
   :config
   (fancy-compilation-mode t))
 
+;;;; Compile
+(require 'compile)
+(add-hook 'c-mode-hook
+          (lambda ()
+            (set (make-local-variable 'compile-command)
+                 (if (file-exists-p "Makefile")
+                     ;; If Makefile exists, use "make -k" with current filename as target
+                     (let ((target (file-name-sans-extension
+                                    (file-name-nondirectory buffer-file-name))))
+                       (format "make -k %s" target))
+                   ;; Otherwise, use the default compilation command
+                   (let ((file (file-name-nondirectory buffer-file-name)))
+                     (format "%s -c -o %s.o %s %s %s"
+                             (or (getenv "CC") "gcc")
+                             (file-name-sans-extension file)
+                             (or (getenv "CPPFLAGS") "-DDEBUG=9")
+                             (or (getenv "CFLAGS") "-ansi -pedantic -Wall -g")
+                             file))))))
+
 ;;; Apheleia formatter
 ;; is an Emacs package designed to run code formatters (e.g., Shfmt,
 ;; Black and Prettier) asynchronously without disrupting the cursor position.
-(use-package apheleia
-  :ensure t
+(use-package apheleia :ensure t
   :hook ((prog-mode . apheleia-mode))
   :config
   ;; Configure formatters after apheleia loads
@@ -677,50 +837,31 @@
   (push '(tex-fmt . ("tex-fmt" "--stdin")) apheleia-formatters)
   (dolist (mode '(LaTeX-mode latex-mode TeX-latex-mode TeX-mode))
     (setf (alist-get mode apheleia-mode-alist) 'tex-fmt))
+  (apheleia-global-mode t)
   )
 
-(apheleia-global-mode t)
+;;; Rainbow-delimiters
+(use-package rainbow-delimiters :ensure t
+  :hook ((prog-mode . rainbow-delimiters-mode)
+         (LaTeX-mode . rainbow-delimiters-mode)))
 
-;;; Misc
-(use-package rainbow-delimiters
-  :ensure t)
-(rainbow-delimiters-mode t)
-
-(use-package golden-ratio
-  :ensure t)
+;;; Window management (golden-ratio)
+(use-package golden-ratio :ensure t)
 
 ;;; Outli
 ;; Simple comment-based outline folding for Emacs
-(use-package outli
-  :ensure t
+(use-package outli :ensure t
   ;; :after lispy ; uncomment only if you use lispy; it also sets speed keys on headers!
   :bind (:map outli-mode-map ; convenience key to get back to containing heading
               ("C-c C-p" . (lambda () (interactive) (outline-back-to-heading))))
   :hook ((prog-mode text-mode) . outli-mode)) ; or whichever modes you prefer
 
 
-;;; Auto-revert
-;;in Emacs is a feature that automatically updates the
-;; contents of a buffer to reflect changes made to the underlying file
-;; on disk.
-(use-package autorevert
-  :ensure nil
-  :commands (auto-revert-mode global-auto-revert-mode)
-  :hook
-  (after-init . global-auto-revert-mode)
-  :init
-  (setq auto-revert-interval 3)
-  (setq auto-revert-remote-files nil)
-  (setq auto-revert-use-notify t)
-  (setq auto-revert-avoid-polling nil)
-  (setq auto-revert-verbose t))
-
-;;; Recentf, savehist, saveplace, autosave
+;;; Recentf, savehist, saveplace, autosave, auto-revert
 ;; is an Emacs package that maintains a list of recently
 ;; accessed files, making it easier to reopen files you have worked on
 ;; recently.
-(use-package recentf
-  :ensure nil
+(use-package recentf :ensure nil
   :commands (recentf-mode recentf-cleanup)
   :hook
   (after-init . recentf-mode)
@@ -746,8 +887,7 @@
 ;; sessions. It saves the history of inputs in the minibuffer, such as commands,
 ;; search strings, and other prompts, to a file. This allows users to retain
 ;; their minibuffer history across Emacs restarts.
-(use-package savehist
-  :ensure nil
+(use-package savehist :ensure nil
   :commands (savehist-mode savehist-save)
   :hook
   (after-init . savehist-mode)
@@ -764,8 +904,7 @@
 ;; save-place-mode enables Emacs to remember the last location within a file
 ;; upon reopening. This feature is particularly beneficial for resuming work at
 ;; the precise point where you previously left off.
-(use-package saveplace
-  :ensure nil
+(use-package saveplace :ensure nil
   :commands (save-place-mode save-place-local-mode)
   :hook
   (after-init . save-place-mode)
@@ -780,13 +919,26 @@
 (setq auto-save-interval 300)
 (setq auto-save-timeout 30)
 
+;; autorevert is a feature that automatically updates the
+;; contents of a buffer to reflect changes made to the underlying file
+;; on disk.
+(use-package autorevert :ensure nil
+  :commands (auto-revert-mode global-auto-revert-mode)
+  :hook
+  (after-init . global-auto-revert-mode)
+  :init
+  (setq auto-revert-interval 3)
+  (setq auto-revert-remote-files nil)
+  (setq auto-revert-use-notify t)
+  (setq auto-revert-avoid-polling nil)
+  (setq auto-revert-verbose t))
+
 
 ;;; Corfu
 ;; enhances in-buffer completion by displaying a compact popup with
 ;; current candidates, positioned either below or above the point. Candidates
 ;; can be selected by navigating up or down.
-(use-package corfu
-  :ensure t
+(use-package corfu :ensure t
   :commands (corfu-mode global-corfu-mode)
 
   :hook ((prog-mode . corfu-mode)
@@ -808,8 +960,7 @@
 ;; extends the capabilities of
 ;; in-buffer completion. It integrates with Corfu or the default completion UI,
 ;; by providing additional backends through completion-at-point-functions.
-(use-package cape
-  :ensure t
+(use-package cape :ensure t
   :commands (cape-dabbrev cape-file cape-elisp-block)
   :bind ("C-c p" . cape-prefix-map)
   :init
@@ -823,22 +974,19 @@
 ;; provides a vertical completion interface, making it easier to
 ;; navigate and select from completion candidates (e.g., when `M-x` is pressed).
 (use-package vertico
-  ;; (Note: It is recommended to also enable the savehist package.)
-  :ensure t
+  ;; (Note: It is recommended to also enable the savehist package.) :ensure t
   :custom
   ;; (Note: It is recommended to also enable the savehist package.)
   (vertico-scroll-margin 0) ;; Different scroll margin
   (vertico-count 10) ;; Show more candidates
   (vertico-resize t) ;; Grow and shrink the Vertico minibuffer
-  (vertico-cycle t) ;; Enable cycling for `vertico-next/previous'
-  :ensure t
+  (vertico-cycle t) ;; Enable cycling for `vertico-next/previous' :ensure t
   :config
   (vertico-mode))
 
 ;; Configure the directory extension
 (use-package vertico-directory
-  :after vertico
-  :ensure nil  ; vertico-directory is included with vertico
+  :after vertico :ensure nil  ; vertico-directory is included with vertico
   ;; More convenient directory navigation commands
   :bind (:map vertico-map
               ("RET" . vertico-directory-enter)      ; Enter directories
@@ -850,8 +998,7 @@
 ;;;; Orderless + Vertico = flexible matching capabilities
 ;; allowing users to input multiple patterns separated by spaces, which
 ;; Orderless then matches in any order against the candidates.
-(use-package orderless
-  :ensure t
+(use-package orderless :ensure t
   :custom
   (completion-styles '(orderless basic))
   (completion-category-defaults nil)
@@ -861,8 +1008,7 @@
 ;; allows Embark to offer you preconfigured actions in more contexts.
 ;; In addition to that, Marginalia also enhances Vertico by adding rich
 ;; annotations to the completion candidates displayed in Vertico's interface.
-(use-package marginalia
-  :ensure t
+(use-package marginalia :ensure t
   :commands (marginalia-mode marginalia-cycle)
   :hook (after-init . marginalia-mode))
 
@@ -874,8 +1020,7 @@
 (use-package embark
   ;; Embark is an Emacs package that acts like a context menu, allowing
   ;; users to perform context-sensitive actions on selected items
-  ;; directly from the completion interface.
-  :ensure t
+  ;; directly from the completion interface. :ensure t
   :commands (embark-act
              embark-dwim
              embark-export
@@ -897,16 +1042,14 @@
                  nil
                  (window-parameters (mode-line-format . none)))))
 
-(use-package embark-consult
-  :ensure t
+(use-package embark-consult :ensure t
   :hook
   (embark-collect-mode . consult-preview-at-point-mode))
 
 ;;; Consult
 ;; offers a suite of commands for efficient searching, previewing, and
 ;; interacting with buffers, file contents, and more, improving various tasks.
-(use-package consult
-  :ensure t
+(use-package consult :ensure t
   :bind (;; C-c bindings in `mode-specific-map'
          ("C-c M-x" . consult-mode-command)
          ("C-c h" . consult-history)
@@ -944,10 +1087,16 @@
          ("M-s g" . consult-grep)
          ("M-s G" . consult-git-grep)
          ("M-s r" . consult-ripgrep)
-         ("M-s l" . consult-line)
+
          ("M-s L" . consult-line-multi)
          ("M-s k" . consult-keep-lines)
          ("M-s u" . consult-focus-lines)
+
+         ("M-c l" . consult-line)
+         ("M-c i" . consult-imenu)
+         ("M-c o" . consult-outline)
+
+
          ;; Isearch integration
          ("M-s e" . consult-isearch-history)
          :map isearch-mode-map
@@ -999,8 +1148,7 @@
 
 ;;; The undo-fu package is a lightweight wrapper around Emacs' built-in undo
 ;; system, providing more convenient undo/redo functionality.
-(use-package undo-fu
-  :ensure t
+(use-package undo-fu :ensure t
   :commands (undo-fu-only-undo
              undo-fu-only-redo
              undo-fu-only-redo-all
@@ -1012,8 +1160,7 @@
 
 ;; The undo-fu-session package complements undo-fu by enabling the saving
 ;; and restoration of undo history across Emacs sessions, even after restarting.
-(use-package undo-fu-session
-  :ensure t
+(use-package undo-fu-session :ensure t
   :commands undo-fu-session-global-mode
   :hook (after-init . undo-fu-session-global-mode))
 
@@ -1024,8 +1171,7 @@
 ;; (including tabs, their buffers, and windows), and Emacs frames. It offers a
 ;; convenient and effortless way to manage Emacs editing sessions and utilizes
 ;; built-in Emacs functions to persist and restore frames.
-(use-package easysession
-  :ensure t
+(use-package easysession :ensure t
   :commands (easysession-switch-to
              easysession-save-as
              easysession-save-mode
@@ -1078,8 +1224,7 @@
         ("C-c C-e" . markdown-do)))
 
 ;; Automatically generate a table of contents when editing Markdown files
-(use-package markdown-toc
-  :ensure t
+(use-package markdown-toc :ensure t
   :commands (markdown-toc-generate-toc
              markdown-toc-generate-or-refresh-toc
              markdown-toc-delete-toc
@@ -1118,8 +1263,7 @@
 
 
 ;;; Spell check
-(use-package jinx
-  :ensure t
+(use-package jinx :ensure t
   :bind (("M-$" . jinx-correct)
          ("C-M-$" . jinx-languages)))
 
@@ -1143,58 +1287,259 @@
 ;; expressive markup syntax. It supports hierarchical outlines, TODO lists,
 ;; scheduling, deadlines, time tracking, and exporting to multiple formats
 ;; including HTML, LaTeX, PDF, and Markdown.
-(use-package org
-  :ensure t
+(use-package org :ensure t
   :commands (org-mode org-version)
   :mode
   ("\\.org\\'" . org-mode)
   :custom
   ;; (org-hide-leading-stars t)
+  (org-export-backends '(ascii html icalendar latex beamer odt md))
   (org-startup-indented t)
   (org-adapt-indentation nil)
   (org-edit-src-content-indentation 0)
-  ;; (org-fontify-done-headline t)
-  ;; (org-fontify-todo-headline t)
-  ;; (org-fontify-whole-heading-line t)
-  ;; (org-fontify-quote-and-verse-blocks t)
+  (org-descriptive-links nil)
+  (org-fontify-done-headline t)
+  (org-fontify-todo-headline t)
+  (org-fontify-whole-heading-line t)
+  (org-fontify-quote-and-verse-blocks t)
   (org-startup-truncated t))
 
 (use-package org-appear
   :commands org-appear-mode
   :hook (org-mode . org-appear-mode))
 
+(use-package org-sticky-header :ensure t
+  :hook (org-mode))
+
+(use-package org-table-sticky-header :ensure t
+  :hook (org-mode))
+
 ;;; Pretty icons
-(use-package nerd-icons
-  :ensure t
+(use-package nerd-icons :ensure t
   :demand t)
 
-(use-package nerd-icons-completion
-  :ensure t
+(use-package nerd-icons-completion :ensure t
   :demand t
   :config
   (nerd-icons-completion-mode t))
 
 (use-package nerd-icons-corfu
-  :demand t
-  :ensure t)
+  :demand t :ensure t)
 
-(use-package treemacs-nerd-icons
-  :ensure t
+(use-package treemacs-nerd-icons :ensure t
   :demand t
   :config
   (treemacs-nerd-icons-config))
 
-;;; Modern sidebar navigation for files and buffers (ibuffer-sidebar, treemacs)
-(use-package ibuffer-sidebar
-  :ensure t
+;;; topsy.el (simple sticky header showing definition beyond top of window)
+(use-package topsy :ensure t
+  :hook (prog-mode LaTeX-mode))
+
+;;; dogears.el (never lose your place in Emacs again)
+(use-package dogears :ensure t
+  :config (dogears-mode t)
+  :bind (:map global-map
+              ("M-g c" . dogears-go)
+              ("M-g M-b" . dogears-back)
+              ("M-g M-f" . dogears-forward)
+              ("M-g M-d" . dogears-list)
+              ("M-g M-D" . dogears-sidebar)))
+
+;;; Modern sidebar navigation for files and buffers (ibuffer-sidebar, treemacs, sr-speedbar)
+
+;;;; bufler
+(use-package prism :ensure t
+  :demand t
+  :hook (bufler-list-mode . prism-whitespace-mode))
+(add-hook 'after-init-hook #'prism-randomize-colors)
+(defun my-prism-after-theme (theme &rest _)
+  (prism-randomize-colors))
+(advice-add 'enable-theme :after #'my-prism-after-theme)
+
+;; (prism-set-colors :num 16
+;;   :desaturations (cl-loop for i from 0 below 16
+;;                           collect (* i 2.5))
+;;   :lightens (cl-loop for i from 0 below 16
+;;                      collect (* i 2.5))
+;;   :colors (list "dodgerblue" "medium sea green" "sandy brown")
+;;
+;;   :comments-fn
+;;   (lambda (color)
+;;     (prism-blend color
+;;                  (face-attribute 'font-lock-comment-face :foreground) 0.25))
+;;
+;;   :strings-fn
+;;   (lambda (color)
+;;     (prism-blend color "white" 0.5)))
+
+(use-package bufler :ensure
+  :demand t
+  :custom
+  (bufler-vc-state t)
+  (bufler-vc-remote t)
+  (bufler-vc-refresh t)
+  (bufler-column-name-modified-buffer-sigil "+")
+  (bufler-column-Name-max-width 33)
+  :bind
+  (("M-9" . bufler-sidebar))
+  :config
+  ;; Bind mouse-1 in the bufler list mode to switch buffers
+  (define-key bufler-list-mode-map (kbd "<double-mouse-1>") #'bufler-list-buffer-switch))
+
+;;;; SpeedBar
+(use-package sr-speedbar :ensure t
+  :demand t)
+(setq speedbar-frame-parameters
+      '((minibuffer)
+	    (width . 40)
+	    (border-width . 0)
+	    (menu-bar-lines . 0)
+	    (tool-bar-lines . 0)
+	    (unsplittable . t)
+	    (left-fringe . 0)))
+(setq speedbar-hide-button-brackets-flag t)
+(setq speedbar-show-unknown-files t)
+(setq speedbar-smart-directory-expand-flag t)
+(setq speedbar-use-images nil)
+;; (setq sr-speedbar-auto-refresh nil)
+;; (setq sr-speedbar-max-width 70)
+;; (setq sr-speedbar-width-console 40)
+;; 1. Start Speedbar in buffers mode instead of files mode
+(setq speedbar-initial-expansion-list-name "buffers")
+;; 2. Disable Quick Buffers to ensure the standard buffer list is displayed.
+(setq speedbar-show-quick-buffers nil)
+;; 3. Prevent speedbar from reverting to directory/file display automatically.
+;; This ensures the speedbar frame remains in buffer mode even when visiting files.
+(setq speedbar-track-current-file nil)
+
+;; 4. Disable the default sorting by usage time
+;;    - Setting this to nil keeps the order given by `buffer-list`
+;;      (which is most recently selected first).
+;; (setq speedbar-buffers-sort-function nil)
+
+;; 5. Advise the buffer list function to sort alphabetically.
+;; By default, Emacs orders buffers by usage time. This advice enforces alphabetical order.
+;; (advice-add 'speedbar-buffer-list :filter-return
+;;             (lambda (buffer-list)
+;;               (sort buffer-list
+;;                     (lambda (a b)
+;;                       (string< (buffer-name a) (buffer-name b))))))
+
+(with-eval-after-load 'speedbar
+  (define-key speedbar-mode-map (kbd "b") 'speedbar-buffers)
+  (define-key speedbar-mode-map (kbd "f") 'speedbar-files))
+
+(setq speedbar-buffers-group-function 'speedbar-group-buffers-by-mode)
+
+
+;;;; iBuffer
+(use-package ibuffer :ensure nil
+  :config
+  (setq ibuffer-expert t)
+  (setq ibuffer-display-summary nil)
+  (setq ibuffer-use-other-window nil)
+  (setq ibuffer-show-empty-filter-groups nil)
+  (setq ibuffer-default-sorting-mode 'filename/process)
+  (setq ibuffer-title-face 'font-lock-doc-face)
+  (setq ibuffer-use-header-line t)
+  (setq ibuffer-default-shrink-to-minimum-size nil)
+  (setq ibuffer-formats
+        '((mark modified read-only locked " "
+                (name 30 30 :left :elide)
+                " "
+                (size 9 -1 :right)
+                " "
+                (mode 16 16 :left :elide)
+                " " filename-and-process)
+          (mark " "
+                (name 16 -1)
+                " " filename)))
+  (setq ibuffer-saved-filter-groups
+        '(("Main"
+           ("Directories" (mode . dired-mode))
+           ("C++" (or
+                   (mode . c++-mode)
+                   (mode . c++-ts-mode)
+                   (mode . c-mode)
+                   (mode . c-ts-mode)
+                   (mode . c-or-c++-ts-mode)))
+           ("Python" (or
+                      (mode . python-ts-mode)
+                      (mode . c-mode)
+                      (mode . python-mode)))
+           ("Build" (or
+                     (mode . make-mode)
+                     (mode . makefile-gmake-mode)
+                     (name . "^Makefile$")
+                     (mode . change-log-mode)))
+           ("Scripts" (or
+                       (mode . shell-script-mode)
+                       (mode . shell-mode)
+                       (mode . sh-mode)
+                       (mode . lua-mode)
+                       (mode . bat-mode)))
+           ("Config" (or
+                      (mode . conf-mode)
+                      (mode . conf-toml-mode)
+                      (mode . toml-ts-mode)
+                      (mode . conf-windows-mode)
+                      (name . "^\\.clangd$")
+                      (name . "^\\.gitignore$")
+                      (name . "^Doxyfile$")
+                      (name . "^config\\.toml$")
+                      (mode . yaml-mode)))
+           ("Web" (or
+                   (mode . mhtml-mode)
+                   (mode . html-mode)
+                   (mode . web-mode)
+                   (mode . nxml-mode)))
+           ("CSS" (or
+                   (mode . css-mode)
+                   (mode . sass-mode)))
+           ("JS" (or
+                  (mode . js-mode)
+                  (mode . rjsx-mode)))
+           ("Markup" (or
+                      (mode . markdown-mode)
+                      (mode . adoc-mode)))
+           ("Org" (mode . org-mode))
+           ("LaTeX" (name . "\.tex$"))
+           ("Magit" (or
+                     (mode . magit-blame-mode)
+                     (mode . magit-cherry-mode)
+                     (mode . magit-diff-mode)
+                     (mode . magit-log-mode)
+                     (mode . magit-process-mode)
+                     (mode . magit-status-mode)))
+           ("Apps" (or
+                    (mode . elfeed-search-mode)
+                    (mode . elfeed-show-mode)))
+           ("Fundamental" (or
+                           (mode . fundamental-mode)
+                           (mode . text-mode)))
+           ("Emacs" (or
+                     (mode . emacs-lisp-mode)
+                     (name . "^\\*Help\\*$")
+                     (name . "^\\*Custom.*")
+                     (name . "^\\*Org Agenda\\*$")
+                     (name . "^\\*info\\*$")
+                     (name . "^\\*scratch\\*$")
+                     (name . "^\\*Backtrace\\*$")
+                     (name . "^\\*Messages\\*$"))))))
+  :hook
+  (ibuffer-mode . (lambda ()
+                    (ibuffer-switch-to-saved-filter-groups "Main")))
+  )
+
+(use-package ibuffer-sidebar :ensure t
   :commands (ibuffer-sidebar-toggle-sidebar))
 
+;;;; Treemacs
 ;; A file and project explorer for Emacs that displays a structured tree
 ;; layout, similar to file browsers in modern IDEs. It functions as a sidebar
 ;; in the left window, providing a persistent view of files, projects, and
 ;; other elements.
-(use-package treemacs
-  :ensure t
+(use-package treemacs :ensure t
   :commands (treemacs
              treemacs-select-window
              treemacs-delete-other-windows
@@ -1296,13 +1641,13 @@
   (define-key treemacs-mode-map [mouse-1] #'treemacs-single-click-expand-action))
 
 ;;; Modern tab bar for Emacs (centaur-tabs)
-(use-package centaur-tabs
-  :ensure t
+(use-package centaur-tabs :ensure t
   :custom
   (centaur-tabs-style "box")
   (centaur-tabs-plain-icons t)
   (centaur-tabs-gray-out-icons 'buffer)
-  (centaur-tabs-modified-marker "*")
+  (setq centaur-tabs-set-modified-marker t)
+  (centaur-tabs-modified-marker "+")
   (centaur-tabs-height 16)
   (centaur-tabs-set-icons t)
   (centaur-tabs-icon-type 'nerd-icons)
@@ -1354,6 +1699,13 @@
   (calendar-mode . centaur-tabs-local-mode)
   (org-agenda-mode . centaur-tabs-local-mode)
   (eshell-mode . centaur-tabs-local-mode)
+  (bufler-mode . centaur-tabs-local-mode)
+  (minibuffer-mode . centaur-tabs-local-mode)
+  (help-mode . centaur-tabs-local-mode)
+  (helpful-mode . centaur-tabs-local-mode)
+  (woman-mode . centaur-tabs-local-mode)
+  (Man-mode . centaur-tabs-local-mode)
+
   :bind
   ("C-<prior>" . centaur-tabs-backward)
   ("C-<next>" . centaur-tabs-forward)
@@ -1382,6 +1734,7 @@
      (string-prefix-p " *temp" name)
      (string-prefix-p "*Help" name)
      (string-prefix-p "*mybuf" name)
+     (string-prefix-p "*Messages*" name)
 
      ;; Is not magit buffer.
      (and (string-prefix-p "magit" name)
@@ -1392,8 +1745,7 @@
 ;;; Helpful
 ;; is an alternative to the built-in Emacs help that provides much more
 ;; contextual information.
-(use-package helpful
-  :ensure t
+(use-package helpful :ensure t
   :commands (helpful-callable
              helpful-variable
              helpful-key
@@ -1410,8 +1762,7 @@
   (helpful-max-buffers 7))
 
 ;;; Avy
-(use-package avy
-  :ensure t
+(use-package avy :ensure t
   :commands (avy-goto-char
              avy-goto-char-2
              avy-next)
@@ -1433,8 +1784,7 @@
 ;; bufferfile-copy: Ensures that the destination directory exists and copies
 ;; the file visited by the current buffer to a new file.
 
-(use-package bufferfile
-  :ensure t
+(use-package bufferfile :ensure t
   :commands (bufferfile-copy
              bufferfile-rename
              bufferfile-delete)
@@ -1450,23 +1800,20 @@
 
 
 ;;; Enables automatic indentation of code while typing (aggressive-indent)
-(use-package aggressive-indent
-  :ensure t
+(use-package aggressive-indent :ensure t
   :commands aggressive-indent-mode
   :hook
   (emacs-lisp-mode . aggressive-indent-mode))
 
 ;;; Elisp quality of life improvements
 ;;;; Highlights function and variable definitions in Emacs Lisp mode (highlight-defined)
-(use-package highlight-defined
-  :ensure t
+(use-package highlight-defined :ensure t
   :commands highlight-defined-mode
   :hook
   (emacs-lisp-mode . highlight-defined-mode))
 
 ;;;; Prevent parenthesis imbalance
-(use-package paredit
-  :ensure t
+(use-package paredit :ensure t
   :commands paredit-mode
   :hook
   (emacs-lisp-mode . paredit-mode)
@@ -1474,8 +1821,7 @@
   (define-key paredit-mode-map (kbd "RET") nil))
 
 ;;;; Displays visible indicators for page breaks
-(use-package page-break-lines
-  :ensure t
+(use-package page-break-lines :ensure t
   :commands (page-break-lines-mode
              global-page-break-lines-mode)
   :hook
@@ -1483,8 +1829,7 @@
 
 ;;;; Provides functions to find references to functions, macros, variables,
 ;; special forms, and symbols in Emacs Lisp
-(use-package elisp-refs
-  :ensure t
+(use-package elisp-refs :ensure t
   :commands (elisp-refs-function
              elisp-refs-macro
              elisp-refs-variable
@@ -1537,8 +1882,7 @@
 ;; appropriate before running it.
 
 ;; AucTeX settings - almost no changes
-(use-package latex
-  :ensure auctex
+(use-package latex :ensure auctex
   :hook ((LaTeX-mode . prettify-symbols-mode))
   :bind (:map LaTeX-mode-map
               ("C-S-e" . latex-math-from-calc))
@@ -1565,8 +1909,7 @@
                                     calc-angle-mode rad))))))))
 
 
-(use-package preview
-  :ensure nil
+(use-package preview :ensure nil
   :after latex
   :hook ((LaTeX-mode . preview-larger-previews))
   :custom
@@ -1607,15 +1950,13 @@ buffer's text scale."
 (add-hook 'text-scale-mode-hook #'my/text-scale-adjust-latex-previews)
 
 ;; CDLatex settings
-(use-package cdlatex
-  :ensure t
+(use-package cdlatex :ensure t
   :hook (LaTeX-mode . turn-on-cdlatex)
   :bind (:map cdlatex-mode-map
               ("<tab>" . cdlatex-tab)))
 
 ;; Array/tabular input with org-tables and cdlatex
-(use-package org-table
-  :ensure nil
+(use-package org-table :ensure nil
   :after cdlatex
   :bind (:map orgtbl-mode-map
               ("<tab>" . lazytab-org-table-next-field-maybe)
@@ -1699,8 +2040,7 @@ buffer's text scale."
     (org-table-next-field)))
 
 ;;; Colorize strings that are plain-text colors (colorful mode)
-(use-package colorful-mode
-  :ensure t
+(use-package colorful-mode :ensure t
   :custom
   (colorful-use-prefix t)
   (colorful-only-strings 'only-prog)
@@ -1710,9 +2050,7 @@ buffer's text scale."
   (add-to-list 'global-colorful-modes 'helpful-mode))
 
 ;;; quickrun.el - quickly run most code file
-(use-package quickrun
-  :ensure t
-  :defer t)
+(use-package quickrun :ensure t :defer t)
 ;; Configure it like this:
 ;; ;; Use this parameter as C++ default
 ;; (quickrun-add-command "c++/c1z"
@@ -1735,8 +2073,7 @@ buffer's text scale."
 ;;   :override t)
 
 ;;; casual.el - A collection of opinionated keyboard-driven user interfaces for various built-in Emacs modes.
-(use-package casual
-  :ensure t)
+(use-package casual :ensure t)
 
 ;;; russian language
 (setq calendar-latitude 55.75     ; Moscow
@@ -1744,9 +2081,7 @@ buffer's text scale."
 
 ;;;; Language input config
 (setq-default default-input-method 'russian-computer)
-(use-package reverse-im
-  :ensure t
-  :demand t
+(use-package reverse-im :ensure t :demand t
   :custom
   (reverse-im-input-methods '("russian-computer"))
   :config
@@ -1760,19 +2095,17 @@ buffer's text scale."
       (message "Using reverse-im for Russian input"))))
 
 ;;; move to the beginning of comment, indentation, line (move where I mean)
-(use-package mwim
-  :ensure t)
+(use-package mwim :ensure t)
 (keymap-global-unset "C-a")
 (keymap-global-unset "C-e")
 (keymap-global-set "C-a" #'mwim-beginning)
 (keymap-global-set "C-e" #'mwim-end)
 
 ;;; Quickly generate linear ranges in Emacs (tiny)
-(use-package tiny
-  :ensure t
-  :defer t)
+(use-package tiny :ensure t :defer t)
 
 ;;; minor mode that guesses the indentation offset
-(use-package dtrt-indent
-  :ensure t
-  :defer t)
+(use-package dtrt-indent :ensure t :defer t)
+
+;;; lice.el (License And Header Template)
+(use-package lice :ensure t)
