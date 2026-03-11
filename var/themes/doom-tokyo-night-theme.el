@@ -121,14 +121,14 @@
    (vc-added       green)
    (vc-deleted     red)
 
-   (level-1 "#CADAFF")
-   (level-2 "#81ADFF")
-   (level-3 "#FFC9DB")
-   (level-4 "#FF79BA")
-   (level-5 "#FFD474")
-   (level-6 "#E0A200")
-   (level-7 "#15FDD6")
-   (level-8 "#00CBA2")
+   (level-1 "#7AA2F7")
+   (level-2 "#CF92FB")
+   (level-3 "#FE9CC1")
+   (level-4 "#FFB9A0")
+   (level-5 "#FFD56F")
+   (level-6 "#BEFF8D")
+   (level-7 "#BFFEE6")
+   (level-8 "#A7D5FD")
 
    ;; custom categories
    (hidden     `(,(car bg) "black" "black"))
@@ -153,8 +153,7 @@
 
 
   ;; --- Extra Faces ------------------------
-  (
-   ((line-number-current-line &override) :foreground base8)
+  (((line-number-current-line &override) :foreground base8)
    ((line-number &override) :foreground comments :background (doom-darken bg 0.025))
 
    (font-lock-comment-face
@@ -272,12 +271,12 @@
    (treemacs-git-renamed-face :foreground yellow)
 
    ;;; Magit
-   (magit-section-heading :foreground blue)
-   (magit-branch-remote   :foreground orange)
-   (magit-diff-our :foreground (doom-darken red 0.2) :background (doom-darken red 0.7))
-   (magit-diff-our-highlight :foreground red :background (doom-darken red 0.5) :weight 'bold)
-   (magit-diff-removed :foreground (doom-darken red 0.2) :background (doom-darken red 0.7))
-   (magit-diff-removed-highlight :foreground red :background (doom-darken red 0.5) :weight 'bold)
+   (magit-section-heading         :foreground blue)
+   (magit-branch-remote           :foreground orange)
+   (magit-diff-our                :foreground (doom-darken red 0.2) :background (doom-darken red 0.7))
+   (magit-diff-our-highlight      :foreground red :background (doom-darken red 0.5) :weight 'bold)
+   (magit-diff-removed            :foreground (doom-darken red 0.2) :background (doom-darken red 0.7))
+   (magit-diff-removed-highlight  :foreground red :background (doom-darken red 0.5) :weight 'bold)
 
    ;; --- Major-Mode Faces -------------------
    ;;; elisp
@@ -336,8 +335,8 @@
    (web-mode-html-tag-face :foreground red)
 
    ;; ;;;; tab-line/tab-bar (Emacs 27+)
-   ;; ((tab-line &override) :background (doom-darken bg 0.8) :foreground base4)
-   ;; (tab-line-tab :i:background base4 :foreground fg)
+   (tab-line :foreground base2 :background "#000000" :box nil)
+   (tab-line-tab :foreground fg :background bg :box nil)
    ;; ;; (tab-line-tab-inactive :background bg-alt :foreground fg-alt)
    ;; (tab-line-tab-incative :background (doom-darken bg 0.5) :foreground base4)
    ;; (tab-line-tab-inactive-alternate :inherit 'tab-line-tab-inactive)
@@ -349,12 +348,13 @@
    ;; ((tab-bar-tab &override) :inherit 'tab-line-tab)
    ;; ((tab-bar-tab-inactive &override) :inherit 'tab-line-tab-inactive)
    ;;
-   ;; ;;;; centaur-tabs
+   ;;;; centaur-tabs
    ;; (centaur-tabs-default :inherit 'tab-bar :box nil)
-   ;; ((centaur-tabs-selected &override) :inherit 'tab-line-tab :box nil)
-   ;; (centaur-tabs-unselected :inherit 'tab-bar-tab-inactive :box nil)
-   ;; (centaur-tabs-selected-modified   :background bg :foreground teal)
-   ;; (centaur-tabs-unselected-modified :background bg-alt :foreground teal)
+   (centaur-tabs-default :foreground base2 :background "#000000" :box nil)
+   (centaur-tabs-selected :foreground fg :background bg :box nil)
+   (centaur-tabs-unselected :foreground base2 :background "#000000" :box nil)
+   (centaur-tabs-selected-modified :background bg :foreground blue :slant 'italic)
+   (centaur-tabs-unselected-modified :inherit 'centaur-tabs-unselected :foreground (doom-darken blue 0.2) :slant 'italic)
    ;; (centaur-tabs-active-bar-face :background (if (bound-and-true-p -modeline-bright) modeline-bg highlight))
    ;; (centaur-tabs-modified-marker-selected
    ;;  :foreground (if (bound-and-true-p -modeline-bright) modeline-bg highlight)
@@ -367,7 +367,9 @@
    (paren-face-mismatch :foreground bg  :background red   :weight 'ultra-bold)
    (paren-face-no-match :inherit 'paren-face-mismatch :weight 'ultra-bold)
 
-   )
+   (org-block :background "#212430")
+   (org-block-end-line :foreground base5 :background base0 :extend t)
+   (org-block-begin-line :foreground base5 :background base0 :extend t))
 
   ;; --- extra variables ---------------------
   ;; ()
