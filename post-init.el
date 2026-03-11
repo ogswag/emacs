@@ -82,6 +82,24 @@
     (set-face-attribute 'fixed-pitch nil :family "JetBrains Mono")
     (set-face-attribute 'variable-pitch nil :family "Noto Sans"))))
 
+(use-package ligature
+  :ensure t
+  :demand t
+  :config
+  (ligature-set-ligatures 'prog-mode '("--" "---" "==" "===" "!=" "!==" "=!="
+                                       "=:=" "=/=" "<=" ">=" "&&" "&&&" "&=" "++" "+++" "***" ";;" "!!"
+                                       "??" "???" "?:" "?." "?=" "<:" ":<" ":>" ">:" "<:<" "<>" "<<<" ">>>"
+                                       "<<" ">>" "||" "-|" "_|_" "|-" "||-" "|=" "||=" "##" "###" "####"
+                                       "#{" "#[" "]#" "#(" "#?" "#_" "#_(" "#:" "#!" "#=" "^=" "<$>" "<$"
+                                       "$>" "<+>" "<+" "+>" "<*>" "<*" "*>" "</" "</>" "/>" "<!--" "<#--"
+                                       "-->" "->" "->>" "<<-" "<-" "<=<" "=<<" "<<=" "<==" "<=>" "<==>"
+                                       "==>" "=>" "=>>" ">=>" ">>=" ">>-" ">-" "-<" "-<<" ">->" "<-<" "<-|"
+                                       "<=|" "|=>" "|->" "<->" "<~~" "<~" "<~>" "~~" "~~>" "~>" "~-" "-~"
+                                       "~@" "[||]" "|]" "[|" "|}" "{|" "[<" ">]" "|>" "<|" "||>" "<||"
+                                       "|||>" "<|||" "<|>" "..." ".." ".=" "..<" ".?" "::" ":::" ":=" "::="
+                                       ":?" ":?>" "//" "///" "/*" "*/" "/=" "//=" "/==" "@_" "__" "???"
+                                       "<:<" ";;;"))
+  (global-ligature-mode t))
 
 ;; Track changes in the window configuration, allowing undoing actions such as
 ;; closing windows.
@@ -151,6 +169,12 @@
 ;; Use zsh for shell commands and make it interactive
 (setq shell-file-name "zsh")
 (setq shell-command-switch "-ic")
+(defun my/shell-command-colorize ()
+  (when (equal (buffer-name) "*Shell Command Output*")
+    (ansi-color-apply-on-buffer)))
+(add-hook 'shell-command-setup-hook #'my/shell-command-colorize)
+
+(setq x-stretch-cursor t)
 
 ;;; exec-path-from-shell
 (use-package exec-path-from-shell
@@ -310,187 +334,17 @@
         (fg-prose-block-delimiter "gray22")
         (comment red)))
 
-(setq modus-vivendi-palette-overrides
-      '(;; Core Background and Foreground
-        (bg-main "#1a1b26")        ;; Editor background (Night)
-        (bg-dim "#13141c")         ;; Alternate/Dim background (bg-alt from source)
-        (bg-active "#24283b")      ;; Editor background (Storm) / Active elements
-        (bg-inactive "#16161e")    ;; Inactive panels
-        (fg-main "#a9b1d6")        ;; Editor foreground
-        (fg-alt "#c0caf5")         ;; Variables, Class names (base8)
-        (fg-dim "#565f89")         ;; Comments (dark-blue)
-        (fg-dim-alt "#9099c0")
-        ;; --- Semantic Colors (From Provided List) ---
-        (red                            "#f7768e")
-        (red-warmer                     "#e6785e")
-        (red-cooler                     "#e07888")
-        (red-faint                      "#e8b8ab")
-        (red-intense                    "#e65555")
-        (green                          "#9ece6a")
-        (green-warmer                   "#5ebc89")
-        (green-cooler                   "#73daca")
-        (green-faint                    "#7cc2a6")
-        (green-intense                  "#3cc9a4")
-        (yellow                         "#e0af68")
-        (yellow-warmer                  "#f0b060")
-        (yellow-cooler                  "#c0cf6a")
-        (yellow-faint                   "#e0d38c")
-        (yellow-intense                 "#f0c060")
-        (blue                           "#7aa2f7")
-        (blue-warmer                    "#9ab0f7")
-        (blue-cooler                    "#7dcfff")
-        (blue-faint                     "#c0d8eb")
-        (blue-intense                   "#5a9aff")
-        (magenta                        "#bb9af7")
-        (magenta-warmer                 "#f7a8d0")
-        (magenta-cooler                 "#9d7cd8")
-        (magenta-faint                  "#d8c0e8")
-        (magenta-intense                "#c07af7")
-        (cyan                           "#b4f9f8")
-        (cyan-warmer                    "#b3ffd9")
-        (cyan-cooler                    "#7de5ff")
-        (cyan-faint                     "#6ac4c3")
-        (cyan-intense                   "#2ac3de")
-        (orange                         "#ff9e64")
-        (rust                           "#c07a5a")
-        (gold                           "#c0a05b")
-        (olive                          "#a3bfa3")
-        (slate                          "#8099a0")
-        (indigo                         "#857ec5")
-        (maroon                         "#b569c0")
-        (pink                           "#d8c0e8")
-        (bg-red-intense                 "#9d1f1f")
-        (bg-green-intense               "#2f822f")
-        (bg-yellow-intense              "#7a6100")
-        (bg-blue-intense                "#1640b0")
-        (bg-magenta-intense             "#7030af")
-        (bg-cyan-intense                "#2266ae")
-        (bg-red-subtle                  "#620f2a")
-        (bg-green-subtle                "#00422a")
-        (bg-yellow-subtle               "#4a4000")
-        (bg-blue-subtle                 "#242679")
-        (bg-magenta-subtle              "#552f5f")
-        (bg-cyan-subtle                 "#004065")
-        (bg-red-nuanced                 "#3a0c14")
-        (bg-green-nuanced               "#092f1f")
-        (bg-yellow-nuanced              "#381d0f")
-        (bg-blue-nuanced                "#12154a")
-        (bg-magenta-nuanced             "#2f0c3f")
-        (bg-cyan-nuanced                "#042837")
-        (bg-clay                        "#3a1a1a")
-        (fg-clay                        "#ffb090")
-        (bg-ochre                       "#3a2a1a")
-        (fg-ochre                       "#e0c080")
-        (bg-lavender                    "#38325c")
-        (fg-lavender                    "#dfc0f0")
-        (bg-sage                        "#143e32")
-        (fg-sage                        "#c3e7d4")
-        (bg-graph-red-0                 "#f7768e")
-        (bg-graph-red-1                 "#43242b")
-        (bg-graph-green-0               "#9ece6a")
-        (bg-graph-green-1               "#293e2b")
-        (bg-graph-yellow-0              "#e0af68")
-        (bg-graph-yellow-1              "#c0a05b")
-        (bg-graph-blue-0                "#7aa2f7")
-        (bg-graph-blue-1                "#1e2a3a")
-        (bg-graph-magenta-0             "#bb9af7")
-        (bg-graph-magenta-1             "#2f2a4a")
-        (bg-graph-cyan-0                "#7dcfff")
-        (bg-graph-cyan-1                "#1e3a4a")
-        (bg-completion                  "#28344a")
-        (bg-hover                       "#3a4a4a")
-        (bg-hover-secondary             "#4a3a2a")
-        (bg-hl-line                     "#292e42")
-        (bg-region                      "#414868")
-        (fg-region                      "#c0caf5")
-        (bg-mode-line-active            "#1f2335")
-        (fg-mode-line-active            "#c0caf5")
-        (border-mode-line-active        "#565f89")
-        (bg-mode-line-inactive          "#1f2335")
-        (fg-mode-line-inactive          "#a9b1d6")
-        (border-mode-line-inactive      "#3b4261")
-        (modeline-err                   "#f7768e")
-        (modeline-warning               "#e0af68")
-        (modeline-info                  "#7dcfff")
-        (bg-tab-bar                     "#1f2335")
-        (bg-tab-current                 "#1a1b26")
-        (bg-tab-other                   "#24283b")
-        (bg-added                       "#273a2b")
-        (bg-added-faint                 "#1a2a1a")
-        (bg-added-refine                "#2a4a2a")
-        (bg-added-fringe                "#3a6a3a")
-        (fg-added                       "#c0e0c0")
-        (fg-added-intense               "#6fcf6f")
-        (bg-changed                     "#3a3a1a")
-        (bg-changed-faint               "#2a2a0a")
-        (bg-changed-refine              "#4a4a1a")
-        (bg-changed-fringe              "#6a5a1a")
-        (fg-changed                     "#e0c080")
-        (fg-changed-intense             "#c0a05b")
-        (bg-removed                     "#392a2e")
-        (bg-removed-faint               "#2a1a1a")
-        (bg-removed-refine              "#4a2a2a")
-        (bg-removed-fringe              "#5a2a2a")
-        (fg-removed                     "#ffb0b0")
-        (fg-removed-intense             "#ff768e")
-        (bg-diff-context                "#1a1b26")
-
-        (rainbow-0 fg-main)
-        (rainbow-1 blue)
-        (rainbow-2 orange)
-        (rainbow-3 green-cooler)
-        (rainbow-4 cyan-cooler)
-        (rainbow-5 yellow)
-        (rainbow-6 cyan-intense)
-        (rainbow-7 magenta-warmer)
-        (rainbow-8 blue-warmer)
-
-        (bg-paren-match magenta-intense)
-        (fg-paren-match bg-main)
-
-        (fg-prose-block-delimiter fg-dim)
-
-        (fringe unspecified)
-        (bg-line-number-inactive unspecified)
-        (border-mode-line-active unspecified)
-        (border-mode-line-inactive unspecified)
-
-        (string green)
-        (variable fg-main)
-        (variable-use fg-main)
-        (type fg-main)
-        (name blue)
-        (fname blue)
-        (fname-call blue)
-        (builtin red)
-        (docstring fg-dim-alt)
-        (keyword magenta)
-        (property blue-cooler)
-
-        (fg-prompt blue)
-        (fg-prose-code blue)
-        ;; headers -----------------------
-        (fg-heading-1 "#CADAFF")
-        (fg-heading-2 "#81ADFF")
-        (fg-heading-3 "#FFC9DB")
-        (fg-heading-4 "#FF79BA")
-        (fg-heading-5 "#FFD474")
-        (fg-heading-6 "#E0A200")
-        (fg-heading-7 "#15FDD6")
-        (fg-heading-8 "#00CBA2")
-        ))
-
 ;; Fix org block extend
-(defun my/fix-org-block-extend (&rest _args)
-  (dolist (face '(org-block-begin-line org-block-end-line))
-    (when (facep face)
-      (set-face-attribute face nil :extend nil))))
+;; (defun my/fix-org-block-extend (&rest _args)
+;;   (dolist (face '(org-block-begin-line org-block-end-line))
+;;     (when (facep face)
+;;       (set-face-attribute face nil :extend nil))))
 
 (defun my/set-theme-by-time ()
   "Load a light theme between 6:00 and 18:00, and a dark theme otherwise."
   (interactive)
   (let* ((hour (string-to-number (format-time-string "%H")))
-         (light-theme 'doom-tokyo-night)
+         (light-theme 'modus-operandi)
          (dark-theme  'doom-tokyo-night)
          (now-light?  (and (>= hour 6) (< hour 18)))
          (target-theme (if now-light? light-theme dark-theme)))
@@ -502,10 +356,10 @@
       (if (eq dark-theme target-theme)
           (progn
             (load-theme target-theme t)
-            (my/fix-org-block-extend))
+            ;; (my/fix-org-block-extend)
+            )
         (load-theme target-theme t))
-      (message "Switched to %s theme" target-theme)
-      )))
+      (message "Switched to %s theme" target-theme))))
 ;; Run the check every N seconds
 (run-at-time nil 300 #'my/set-theme-by-time)
 
@@ -514,21 +368,21 @@
   :commands (gitattributes-mode
              gitconfig-mode
              gitignore-mode)
-  :mode (("/\\.gitignore\\'" . gitignore-mode)
-         ("/info/exclude\\'" . gitignore-mode)
-         ("/git/ignore\\'" . gitignore-mode)
-         ("/.gitignore_global\\'" . gitignore-mode)  ; jc-dotfiles
+  :mode (("/\\.gitignore\\'"       . gitignore-mode)
+         ("/info/exclude\\'"       . gitignore-mode)
+         ("/git/ignore\\'"         . gitignore-mode)
+         ("/.gitignore_global\\'"  . gitignore-mode)  ; jc-dotfiles
 
-         ("/\\.gitconfig\\'" . gitconfig-mode)
-         ("/\\.git/config\\'" . gitconfig-mode)
-         ("/modules/.*/config\\'" . gitconfig-mode)
-         ("/git/config\\'" . gitconfig-mode)
-         ("/\\.gitmodules\\'" . gitconfig-mode)
-         ("/etc/gitconfig\\'" . gitconfig-mode)
+         ("/\\.gitconfig\\'"       . gitconfig-mode)
+         ("/\\.git/config\\'"      . gitconfig-mode)
+         ("/modules/.*/config\\'"  . gitconfig-mode)
+         ("/git/config\\'"         . gitconfig-mode)
+         ("/\\.gitmodules\\'"      . gitconfig-mode)
+         ("/etc/gitconfig\\'"      . gitconfig-mode)
 
-         ("/\\.gitattributes\\'" . gitattributes-mode)
-         ("/info/attributes\\'" . gitattributes-mode)
-         ("/git/attributes\\'" . gitattributes-mode)))
+         ("/\\.gitattributes\\'"   . gitattributes-mode)
+         ("/info/attributes\\'"    . gitattributes-mode)
+         ("/git/attributes\\'"     . gitattributes-mode)))
 
 ;;; YAML support
 ;; NOTE: Prefer the tree-sitter-based yaml-ts-mode over yaml-mode when
@@ -536,8 +390,8 @@
 ;; features.
 (use-package yaml-mode :ensure t
   :commands yaml-mode
-  :mode (("\\.yaml\\'" . yaml-mode)
-         ("\\.yml\\'" . yaml-mode)))
+  :mode (("\\.yaml\\'"  . yaml-mode)
+         ("\\.yml\\'"   . yaml-mode)))
 
 ;;; Dockerfile support
 ;; NOTE: Prefer the tree-sitter-based dockerfile-ts-mode over dockerfile-mode
@@ -748,24 +602,49 @@
                                (statement-case-open after)
                                (substatement-open after))))
   "My personal C/C++ style matching .clang-format configuration.")
-
 ;; Register style only for CC-mode
 (c-add-style "llvm-allman" llvm-allman-style)
+
+(defconst Google-clang-format
+  '((c-basic-offset . 2)
+    (c-offsets-alist . ((innamespace . 0)     ;; namespace indentation: none
+                        (access-label . -)    ;; public/private: one level out
+                        (inclass . +)         ;; class contents indented
+                        (template-args-cont . c-lineup-template-args-indented)
+                        (arglist-cont-nonempty . +)))
+    (fill-column . 120)                        ;; column limit for auto-fill
+    (c-hanging-braces-alist . ((brace-list-open)
+                               (brace-entry-open)
+                               (substatement-open after)
+                               (block-close . c-snug-do-close)
+                               (extern-lang-open after)))
+    (c-hanging-colons-alist . ((member-init-intro before)
+                               (inher-intro)
+                               (case-label after)
+                               (label after)
+                               (access-label after)))
+    (c-cleanup-list . (scope-operator
+                       list-close-comma
+                       defun-close-semi)))
+  "My custom C++ style based on Google with 120 column limit.")
+
+;; Add the style to the list
+(c-add-style "Google" Google-clang-format)
 
 (defun my/setup-c-style ()
   "Setup my personal C/C++ style for all C-like modes."
   ;; Common settings for all C-like modes
-  (setq-local tab-width 4)
-  (setq-local indent-tabs-mode nil)   ; Use spaces, not tabs
-  (setq-local fill-column 120)        ; Column limit
-  (setq-local comment-column 40)      ; Align comments to column 40
+  (setq-local tab-width 8)
+  (setq-local indent-tabs-mode t)
+  (setq-local fill-column 120)
+  ;; (setq-local comment-column 40)      ; Align comments to column 40
 
   ;; Electric pair settings for Allman style braces
   (setq-local electric-pair-preserve-balance t)
   (setq-local electric-pair-open-newline-between-pairs t)
 
   ;; Set the style - this will apply all settings from llvm-allman-style
-  (c-set-style "llvm-allman")
+  (c-set-style "linux")
 
   (setq-local tab-always-indent 'complete)
 
@@ -783,8 +662,8 @@
   )
 
 ;; Set default style for new buffers
-(setq-default c-default-style '((c-mode . "llvm-allman")
-                                (c++-mode . "llvm-allman")
+(setq-default c-default-style '((c-mode . "linux")
+                                (c++-mode . "linux")
                                 (java-mode . "java")
                                 (awk-mode . "awk")
                                 (other . "bsd")))
@@ -843,7 +722,8 @@
 ;;; Rainbow-delimiters
 (use-package rainbow-delimiters :ensure t
   :hook ((prog-mode . rainbow-delimiters-mode)
-         (LaTeX-mode . rainbow-delimiters-mode)))
+         (LaTeX-mode . rainbow-delimiters-mode)
+         (org-mode . rainbow-delimiters-mode)))
 
 ;;; Window management (golden-ratio)
 (use-package golden-ratio :ensure t)
@@ -938,7 +818,8 @@
 ;; enhances in-buffer completion by displaying a compact popup with
 ;; current candidates, positioned either below or above the point. Candidates
 ;; can be selected by navigating up or down.
-(use-package corfu :ensure t
+(use-package corfu
+  :ensure t
   :commands (corfu-mode global-corfu-mode)
 
   :hook ((prog-mode . corfu-mode)
@@ -947,14 +828,19 @@
 
   :custom
   ;; Hide commands in M-x which do not apply to the current mode.
-  (read-extended-command-predicate #'command-completion-default-include-p)
+  ;; (read-extended-command-predicate #'command-completion-default-include-p)
   ;; Disable Ispell completion function. As an alternative try `cape-dict'.
   (text-mode-ispell-word-completion nil)
   (tab-always-indent 'complete)
-
+  (corfu-auto t)
+  (corfu-auto-delay 0.2)
+  (corfu-cycle t)
   ;; Enable Corfu
   :config
-  (global-corfu-mode))
+  (global-corfu-mode)
+  (corfu-popupinfo-mode)
+  (corfu-history-mode))
+
 
 ;;; Cape, or Completion At Point Extensions
 ;; extends the capabilities of
@@ -1407,10 +1293,10 @@
 ;; 1. Start Speedbar in buffers mode instead of files mode
 (setq speedbar-initial-expansion-list-name "buffers")
 ;; 2. Disable Quick Buffers to ensure the standard buffer list is displayed.
-(setq speedbar-show-quick-buffers nil)
+;; (setq speedbar-show-quick-buffers nil)
 ;; 3. Prevent speedbar from reverting to directory/file display automatically.
 ;; This ensures the speedbar frame remains in buffer mode even when visiting files.
-(setq speedbar-track-current-file nil)
+;; (setq speedbar-track-current-file nil)
 
 ;; 4. Disable the default sorting by usage time
 ;;    - Setting this to nil keeps the order given by `buffer-list`
@@ -1425,12 +1311,11 @@
 ;;                     (lambda (a b)
 ;;                       (string< (buffer-name a) (buffer-name b))))))
 
-(with-eval-after-load 'speedbar
-  (define-key speedbar-mode-map (kbd "b") 'speedbar-buffers)
-  (define-key speedbar-mode-map (kbd "f") 'speedbar-files))
-
-(setq speedbar-buffers-group-function 'speedbar-group-buffers-by-mode)
-
+;; (with-eval-after-load 'speedbar
+;;   (define-key speedbar-mode-map (kbd "b") 'speedbar-buffers)
+;;   (define-key speedbar-mode-map (kbd "f") 'speedbar-files))
+;;
+;; (setq speedbar-buffers-group-function 'speedbar-group-buffers-by-mode)
 
 ;;;; iBuffer
 (use-package ibuffer :ensure nil
@@ -1440,6 +1325,7 @@
   (setq ibuffer-use-other-window nil)
   (setq ibuffer-show-empty-filter-groups nil)
   (setq ibuffer-default-sorting-mode 'filename/process)
+  (setq ibuffer-sorting-mode 'alphabetic)
   (setq ibuffer-title-face 'font-lock-doc-face)
   (setq ibuffer-use-header-line t)
   (setq ibuffer-default-shrink-to-minimum-size nil)
@@ -1641,106 +1527,110 @@
   (define-key treemacs-mode-map [mouse-1] #'treemacs-single-click-expand-action))
 
 ;;; Modern tab bar for Emacs (centaur-tabs)
-(use-package centaur-tabs :ensure t
-  :custom
-  (centaur-tabs-style "box")
-  (centaur-tabs-plain-icons t)
-  (centaur-tabs-gray-out-icons 'buffer)
-  (setq centaur-tabs-set-modified-marker t)
-  (centaur-tabs-modified-marker "+")
-  (centaur-tabs-height 16)
-  (centaur-tabs-set-icons t)
-  (centaur-tabs-icon-type 'nerd-icons)
-  :config
-  (defun centaur-tabs-buffer-groups ()
-    "`centaur-tabs-buffer-groups' control buffers' group rules.
+;; (use-package centaur-tabs :ensure t
+;;   :custom
+;;   (centaur-tabs-style "box")
+;;   (centaur-tabs-plain-icons t)
+;;   (centaur-tabs-gray-out-icons 'buffer)
+;;   (setq centaur-tabs-set-modified-marker t)
+;;   (centaur-tabs-modified-marker "+")
+;;   (centaur-tabs-height 16)
+;;   (centaur-tabs-set-icons t)
+;;   (centaur-tabs-icon-type 'nerd-icons)
+;;   :config
+;;   (defun my-centaur-tabs-buffer-groups-filter ()
+;;     "Filter buffers for centaur-tabs.
+;; Return nil for buffers like *Messages* to hide them.
+;; For all other buffers, return the project name (if any) or a default group."
+;;     (let ((bname (buffer-name)))
+;;       ;; Ignore buffers that match certain patterns
+;;       (cond
+;;        ;; Hide *Messages* buffer
+;;        ((string= bname "*Messages*") nil)
+;;        ;; Hide *Completions* buffer
+;;        ((string= bname "*Completions*") nil)
+;;        ;; Hide any other buffers you want (e.g., "*scratch*")
+;;        ;; ((string= bname "*scratch*") nil)
+;;
+;;        ;; --- Grouping by Project ---
+;;        ;; If projectile is used and the buffer is in a project, group by project name.
+;;        ((and (fboundp 'projectile-project-p)
+;;              (projectile-project-p))
+;;         (list (projectile-project-name)))
+;;
+;;        ;; --- Fallback Grouping ---
+;;        ;; For all other buffers (like *scratch* if not hidden), group them
+;;        ;; by their major mode name.
+;;        (t (list (format "%s" major-mode))))))
+;;
+;;   ;; Set the custom grouping function
+;;   (setq centaur-tabs-buffer-groups-function #'my-centaur-tabs-buffer-groups-filter)
+;;
+;;   :hook
+;;   (dired-mode . centaur-tabs-local-mode)
+;;   (term-mode . centaur-tabs-local-mode)
+;;   (calendar-mode . centaur-tabs-local-mode)
+;;   (org-agenda-mode . centaur-tabs-local-mode)
+;;   (eshell-mode . centaur-tabs-local-mode)
+;;   (bufler-mode . centaur-tabs-local-mode)
+;;   (minibuffer-mode . centaur-tabs-local-mode)
+;;   (help-mode . centaur-tabs-local-mode)
+;;   (helpful-mode . centaur-tabs-local-mode)
+;;   (woman-mode . centaur-tabs-local-mode)
+;;   (Man-mode . centaur-tabs-local-mode)
+;;   (minibuffer-mode . centaur-tabs-local-mode)
+;;
+;;   :bind
+;;   ("C-<prior>" . centaur-tabs-backward)
+;;   ("C-<next>" . centaur-tabs-forward)
+;;   ("C-S-<prior>" . centaur-tabs-move-current-tab-to-left)
+;;   ("C-S-<next>" . centaur-tabs-move-current-tab-to-right))
+;;
+;; (defun centaur-tabs-hide-tab (x)
+;;   "Do no to show buffer X in tabs."
+;;   (let ((name (format "%s" x)))
+;;     (or
+;;      ;; Current window is not dedicated window.
+;;      (window-dedicated-p (selected-window))
+;;
+;;      ;; Buffer name not match below blacklist.
+;;      (string-prefix-p "*epc" name)
+;;      (string-prefix-p "*helm" name)
+;;      (string-prefix-p "*Helm" name)
+;;      (string-prefix-p "*Compile-Log*" name)
+;;      (string-prefix-p "*lsp" name)
+;;      (string-prefix-p "*company" name)
+;;      (string-prefix-p "*Flycheck" name)
+;;      (string-prefix-p "*tramp" name)
+;;      (string-prefix-p " *Mini" name)
+;;      (string-prefix-p "*help" name)
+;;      (string-prefix-p "*straight" name)
+;;      (string-prefix-p " *temp" name)
+;;      (string-prefix-p "*Help" name)
+;;      (string-prefix-p "*mybuf" name)
+;;      (string-prefix-p "*Messages*" name)
+;;      (string-prefix-p "*Minibuf" name)
+;;
+;;      ;; Is not magit buffer.
+;;      (and (string-prefix-p "magit" name)
+;;           (not (file-name-extension name)))
+;;      )))
+;; (setq centaur-tabs-ignore-buffers #'centaur-tabs-hide-tab)
 
-	Group centaur-tabs with mode if buffer is derived from `eshell-mode' `emacs-lisp-mode' `dired-mode' `org-mode' `magit-mode'.
-	All buffer name start with * will group to \"Emacs\".
-	Other buffer group by `centaur-tabs-get-group-name' with project name."
-    (list
-     (cond
-      ;; ((not (eq (file-remote-p (buffer-file-name)) nil))
-      ;; "Remote")
-      ((or (string-equal "*" (substring (buffer-name) 0 1))
-           (memq major-mode '(magit-process-mode
-                              magit-status-mode
-                              magit-diff-mode
-                              magit-log-mode
-                              magit-file-mode
-                              magit-blob-mode
-                              magit-blame-mode
-                              )))
-       "Emacs")
-      ((derived-mode-p 'prog-mode)
-       "Editing")
-      ((derived-mode-p 'dired-mode)
-       "Dired")
-      ((memq major-mode '(helpful-mode
-                          help-mode))
-       "Help")
-      ((memq major-mode '(org-mode
-                          org-agenda-clockreport-mode
-                          org-src-mode
-                          org-agenda-mode
-                          org-beamer-mode
-                          org-indent-mode
-                          org-bullets-mode
-                          org-cdlatex-mode
-                          org-agenda-log-mode
-                          diary-mode))
-       "OrgMode")
-      (t
-       (centaur-tabs-get-group-name (current-buffer))))))
+;; (defun my-centaur-tabs-hide-minibuffer (buffer)
+;;   "Exclude all *Minibuf* buffers from centaur-tabs."
+;;   (let ((name (buffer-name buffer)))
+;;     (and
+;;      ;; exclude minibuffer
+;;      (not (string-prefix-p " *Mini" name))
+;;      ;; keep rest of your filters
+;;      (my-centaur-tabs-hide-buffers buffer))))
+;;
+;; (setq centaur-tabs-buffer-list-function
+;;       (lambda ()
+;;         (seq-filter #'my-centaur-tabs-hide-minibuffer (buffer-list))))
 
-  :hook
-  (dired-mode . centaur-tabs-local-mode)
-  (term-mode . centaur-tabs-local-mode)
-  (calendar-mode . centaur-tabs-local-mode)
-  (org-agenda-mode . centaur-tabs-local-mode)
-  (eshell-mode . centaur-tabs-local-mode)
-  (bufler-mode . centaur-tabs-local-mode)
-  (minibuffer-mode . centaur-tabs-local-mode)
-  (help-mode . centaur-tabs-local-mode)
-  (helpful-mode . centaur-tabs-local-mode)
-  (woman-mode . centaur-tabs-local-mode)
-  (Man-mode . centaur-tabs-local-mode)
-
-  :bind
-  ("C-<prior>" . centaur-tabs-backward)
-  ("C-<next>" . centaur-tabs-forward)
-  ("C-S-<prior>" . centaur-tabs-move-current-tab-to-left)
-  ("C-S-<next>" . centaur-tabs-move-current-tab-to-right))
-
-(defun centaur-tabs-hide-tab (x)
-  "Do no to show buffer X in tabs."
-  (let ((name (format "%s" x)))
-    (or
-     ;; Current window is not dedicated window.
-     (window-dedicated-p (selected-window))
-
-     ;; Buffer name not match below blacklist.
-     (string-prefix-p "*epc" name)
-     (string-prefix-p "*helm" name)
-     (string-prefix-p "*Helm" name)
-     (string-prefix-p "*Compile-Log*" name)
-     (string-prefix-p "*lsp" name)
-     (string-prefix-p "*company" name)
-     (string-prefix-p "*Flycheck" name)
-     (string-prefix-p "*tramp" name)
-     (string-prefix-p " *Mini" name)
-     (string-prefix-p "*help" name)
-     (string-prefix-p "*straight" name)
-     (string-prefix-p " *temp" name)
-     (string-prefix-p "*Help" name)
-     (string-prefix-p "*mybuf" name)
-     (string-prefix-p "*Messages*" name)
-
-     ;; Is not magit buffer.
-     (and (string-prefix-p "magit" name)
-          (not (file-name-extension name)))
-     )))
-(centaur-tabs-mode t)
+;; (centaur-tabs-mode t)
 
 ;;; Helpful
 ;; is an alternative to the built-in Emacs help that provides much more
