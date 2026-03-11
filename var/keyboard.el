@@ -3,7 +3,6 @@
 ;;; CODE:
 
 ;;;; PLATFORM DETECTION
-;;;; Platform Detection
 (defconst my/is-mac (eq system-type 'darwin))
 (defconst my/is-linux (eq system-type 'gnu/linux))
 (defconst my/is-windows (eq system-type 'windows-nt))
