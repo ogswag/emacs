@@ -4,7 +4,7 @@
 ;; URL: https://github.com/jamescherti/minimal-emacs.d
 ;; Package-Requires: ((emacs "29.1"))
 ;; Keywords: maint
-;; Version: 1.3.1
+;; Version: 1.4.0
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 
 ;;; Commentary:
@@ -95,6 +95,18 @@ of the progress or any relevant activities during startup.")
   "Directory beneath minimal-emacs.d files are placed.
 Note that this should end with a directory separator.")
 
+(defvar minimal-emacs-load-pre-early-init t
+  "If non-nil, attempt to load `pre-early-init.el`.")
+
+(defvar minimal-emacs-load-post-early-init t
+  "If non-nil, attempt to load `post-early-init.el`.")
+
+(defvar minimal-emacs-load-pre-init t
+  "If non-nil, attempt to load `pre-init.el`.")
+
+(defvar minimal-emacs-load-post-init t
+  "If non-nil, attempt to load `post-init.el`.")
+
 ;;; Load pre-early-init.el
 
 ;; Prefer loading newer compiled files
@@ -143,7 +155,8 @@ pre-early-init.el, and post-early-init.el.")
       (setq init-file (minimal-emacs--remove-el-file-suffix init-file))
       (load init-file :no-error (not minimal-emacs-debug)))))
 
-(minimal-emacs-load-user-init "pre-early-init.el")
+(when minimal-emacs-load-pre-early-init
+  (minimal-emacs-load-user-init "pre-early-init.el"))
 
 (setq custom-theme-directory
       (expand-file-name "themes/" minimal-emacs-user-directory))
@@ -444,22 +457,19 @@ this stage of initialization."
 (setq package-enable-at-startup nil)  ; Let the init.el file handle this
 (setq package-quickstart-file
       (expand-file-name "package-quickstart.el" user-emacs-directory))
-
-(setq package-archives
-      '(("melpa"        . "https://raw.githubusercontent.com/d12frosted/elpa-mirror/master/melpa/")
-        ("org"          . "https://raw.githubusercontent.com/d12frosted/elpa-mirror/master/org/")
-        ("gnu"          . "https://elpa.gnu.org/packages/")
-        ("nongnu"       . "https://elpa.nongnu.org/nongnu/")
-        ("melpa-stable" . "https://raw.githubusercontent.com/d12frosted/elpa-mirror/master/stable-melpa")))
-
-(setq package-archive-priorities '(("gnu"          . 99)
-                                   ("nongnu"       . 80)
-                                   ("melpa"        . 70)
-                                   ("melpa-stable" . 50)
-                                   ("org"          . 50)))
+(setq package-archives '(("melpa"        . "https://melpa.org/packages/")
+                         ("gnu"          . "https://elpa.gnu.org/packages/")
+                         ("nongnu"       . "https://elpa.nongnu.org/nongnu/")
+                         ("melpa-stable" . "https://stable.melpa.org/packages/")))
+(setq package-archive-priorities '(("gnu"    . 99)
+                                   ("nongnu" . 80)
+                                   ("melpa"  . 70)
+                                   ("melpa-stable" . 50)))
 
 ;;; Load post-early-init.el
-(minimal-emacs-load-user-init "post-early-init.el")
+
+(when minimal-emacs-load-post-early-init
+  (minimal-emacs-load-user-init "post-early-init.el"))
 
 ;; Local variables:
 ;; byte-compile-warnings: (not obsolete free-vars)

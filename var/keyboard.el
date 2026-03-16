@@ -2,14 +2,15 @@
 
 ;;; CODE:
 
-;;;; PLATFORM DETECTION
+;;; PLATFORM DETECTION
 (defconst my/is-mac (eq system-type 'darwin))
 (defconst my/is-linux (eq system-type 'gnu/linux))
 (defconst my/is-windows (eq system-type 'windows-nt))
 
 (require 'viper-cmd)
 
-;;;; UNBINDS
+;;; UNBINDS
+
 (keymap-global-unset "C-M-<wheel-down>") ; mouse-wheel-global-text-scale
 (keymap-global-unset "C-M-<wheel-up>")   ; mouse-wheel-global-text-scale
 (keymap-global-unset "C-<wheel-down>")   ; mouse-wheel-text-scale
@@ -21,23 +22,25 @@
 
 (keymap-global-unset "M-l")  ; downcase-word
 (keymap-global-unset "M-u")  ; upcase-word
-(keymap-global-unset "M-c")  ; capitalize-word
+;; (keymap-global-unset "M-c")  ; capitalize-word
 
-;; Disable secondary selection mouse bindings
+
+;;;; Disable secondary selection mouse bindings
+
 (keymap-global-unset "<mouse-2>")   ; middle mouse button secondary yank
 (keymap-global-unset "M-<mouse-1>") ; set secondary selection start
 (keymap-global-unset "M-<mouse-3>") ; set secondary selection end
 
 (keymap-global-unset "C-M-<down-mouse-1>")
-(keymap-global-unset "C-s" t)
+(keymap-global-unset "C-s")
 (keymap-global-unset "C-x b")
 (keymap-global-unset "C-z")
 (keymap-global-unset "M-<drag-mouse-1>")
 (keymap-global-unset "M-<mouse-1>")
-(keymap-global-unset "M-i" t)
+(keymap-global-unset "M-i")
 (keymap-global-unset "M-j")
 (keymap-global-unset "M-m")
-(keymap-global-unset "M-o" t)
+(keymap-global-unset "M-o")
 (keymap-global-unset "M-{") ; backward-paragraph
 (keymap-global-unset "M-}") ; forward-paragraph
 (keymap-global-unset "s--")
@@ -53,7 +56,8 @@
 (keymap-global-unset "s-k")
 
 
-;;;; GENERAL
+;;; GENERAL
+
 (keymap-global-set "M-8" #'toggle-frame-fullscreen)
 
 (when my/is-mac
@@ -64,8 +68,10 @@
 (when my/is-linux
   (keymap-global-unset "C-z" t)
   (keymap-global-unset "C-Z" t)
+  (keymap-global-unset "C-z" t)
+  (keymap-global-unset "C-S-z" t)
   (keymap-global-set "C-z" #'undo-fu-only-undo)
-  (keymap-global-set "C-r" #'undo-fu-only-redo))
+  (keymap-global-set "C-S-z" #'undo-fu-only-redo))   ; Ctrl+Shift+Z
 
 (keymap-global-set "C-=" #'text-scale-increase)
 (keymap-global-set "C--" #'text-scale-decrease)
@@ -91,7 +97,8 @@
 (keymap-global-set "C-s-," #'previous-buffer)
 (keymap-global-set "C-s-." #'next-buffer)
 
-;;;; EDITING
+;;; EDITING
+
 (keymap-global-set "M-s-<down-mouse-1>" #'mouse-drag-region-rectangle)
 
 (keymap-global-set "M-j" #'join-line)
@@ -102,8 +109,8 @@
 (keymap-global-set "C-s" #'set-mark-command)
 
 (keymap-global-unset "M-<up>" t)
-(keymap-global-unset "M-<left>" t)
-(keymap-global-unset "M-<right>" t)
+;; (keymap-global-unset "M-<left>" t)
+;; (keymap-global-unset "M-<right>" t)
 (keymap-global-unset "M-<down>" t)
 
 (keymap-global-set "M-<up>" #'move-dup-move-lines-up)
@@ -124,8 +131,7 @@
 (keymap-global-set "M-3" #'my/open-curdir)
 
 (keymap-global-set "C-," #'goto-last-change)
-9(keymap-global-set "C-<" #'goto-last-change-reverse)
+(keymap-global-set "C-<" #'goto-last-change-reverse)
 (keymap-global-set "C-'" #'goto-last-point)
-
 
 ;;; keyboard.el ends here
