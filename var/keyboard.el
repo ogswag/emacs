@@ -22,6 +22,7 @@
 
 (keymap-global-unset "M-l")  ; downcase-word
 (keymap-global-unset "M-u")  ; upcase-word
+(keymap-global-unset "S-<down-mouse-1>")
 ;; (keymap-global-unset "M-c")  ; capitalize-word
 
 

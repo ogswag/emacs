@@ -36,7 +36,7 @@
 (use-package visual-line-mode :ensure nil
   :hook (LaTeX-mode latex-mode tex-mode eshell-mode text-mode helpful-mode help-mode))
 
-(global-visual-wrap-prefix-mode t)
+;; (global-visual-wrap-prefix-mode t)
 (global-goto-address-mode t)
 
 ;; Display the current line and column numbers in the mode line
@@ -54,7 +54,7 @@
   ;; (display-line-numbers-type 'relative)
   )
 
-(use-package which-key :ensure nil ; builtin
+(use-package which-key :ensure t ; builtin
   :commands which-key-mode
   :hook (after-init . which-key-mode)
   :custom
@@ -81,9 +81,9 @@
   (when (member "Consolas" (font-family-list))
     (set-frame-font "Consolas" t t)))
  ((eq system-type 'darwin) ; macOS
-  (when (member "Inconsolata LGC" (font-family-list))
-    (set-frame-font "Inconsolata LGC 14" t t)
-    (set-face-attribute 'fixed-pitch nil :family "Inconsolata LGC")
+  (when (member "Pragmasevka" (font-family-list))
+    (set-frame-font "Pragmasevka 16" t t)
+    (set-face-attribute 'fixed-pitch nil :family "Pragmasevka")
     (set-face-attribute 'variable-pitch nil :family "Verdana")))
  ((eq system-type 'gnu/linux)
   (when (member "JetBrains Mono" (font-family-list))
@@ -579,7 +579,7 @@
 (load (expand-file-name "smol.el" user-emacs-directory) t t)
 (load (expand-file-name "lang.el" user-emacs-directory) t t)
 (load (expand-file-name "complete.el" user-emacs-directory) t t)
-(load (expand-file-name "orgmode.el" user-emacs-directory) t t)
-(load (expand-file-name "latex-editor.el" user-emacs-directory) t t)
+;; (load (expand-file-name "orgmode.el" user-emacs-directory) t t)
+;; (load (expand-file-name "latex-editor.el" user-emacs-directory) t t)
 
 (load (expand-file-name "keyboard.el" user-emacs-directory) t t)

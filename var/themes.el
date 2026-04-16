@@ -8,6 +8,18 @@
 (use-package leuven-theme :ensure t
   :defer t)
 
+(use-package modus-themes :ensure t
+  :defer t)
+
+(use-package standard-themes :ensure t
+  :defer t)
+
+(use-package solarized-theme :ensure t
+  :defer t)
+
+(use-package doom-themes :ensure t
+  :defer t)
+
 (setq modus-themes-italic-constructs nil
       modus-themes-bold-constructs nil
       modus-themes-disable-other-themes t)
@@ -24,25 +36,27 @@
 ;;     (when (facep face)
 ;;       (set-face-attribute face nil :extend nil))))
 
-(defun my/set-theme-by-time ()
-  "Load a light theme between 6:00 and 18:00, and a dark theme otherwise."
-  (interactive)
-  (let* ((hour (string-to-number (format-time-string "%H")))
-         (light-theme 'doom-tomorrow-day)
-         (dark-theme  'doom-material-dark)
-         (now-light?  (and (>= hour 6) (< hour 18)))
-         (target-theme (if now-light? light-theme dark-theme)))
+;; (defun my/set-theme-by-time ()
+;;   "Load a light theme between 6:00 and 18:00, and a dark theme otherwise."
+;;   (interactive)
+;;   (let* ((hour (string-to-number (format-time-string "%H")))
+;;          (light-theme 'doom-tomorrow-day)
+;;          (dark-theme  'doom-material-dark)
+;;          (now-light?  (and (>= hour 6) (< hour 18)))
+;;          (target-theme (if now-light? light-theme dark-theme)))
+;;
+;;     ;; Only reload if the target theme isn't already the top active one
+;;     (unless (eq (car custom-enabled-themes) target-theme)
+;;       ;; Disable all currently active themes to ensure a clean switch
+;;       (mapc #'disable-theme custom-enabled-themes)
+;;       (if (eq dark-theme target-theme)
+;;           (progn
+;;             (load-theme target-theme t)
+;;             ;; (my/fix-org-block-extend)
+;;             )
+;;         (load-theme target-theme t))
+;;       (message "Switched to %s theme" target-theme))))
+;; ;; Run the check every N seconds
+;; (run-at-time nil 300 #'my/set-theme-by-time)
 
-    ;; Only reload if the target theme isn't already the top active one
-    (unless (eq (car custom-enabled-themes) target-theme)
-      ;; Disable all currently active themes to ensure a clean switch
-      (mapc #'disable-theme custom-enabled-themes)
-      (if (eq dark-theme target-theme)
-          (progn
-            (load-theme target-theme t)
-            ;; (my/fix-org-block-extend)
-            )
-        (load-theme target-theme t))
-      (message "Switched to %s theme" target-theme))))
-;; Run the check every N seconds
-(run-at-time nil 300 #'my/set-theme-by-time)
+(load-theme 'doom-flatwhite t)

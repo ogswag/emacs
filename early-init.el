@@ -450,7 +450,7 @@ this stage of initialization."
 
 (setq use-package-minimum-reported-time (if minimal-emacs-debug 0 0.1))
 (setq use-package-verbose minimal-emacs-debug)
-(setq use-package-always-ensure (not noninteractive))
+;; (setq use-package-always-ensure (not noninteractive))
 (setq use-package-enable-imenu-support t)
 
 ;; package.el
