@@ -54,15 +54,6 @@
   ;; (display-line-numbers-type 'relative)
   )
 
-(use-package which-key :ensure t ; builtin
-  :commands which-key-mode
-  :hook (after-init . which-key-mode)
-  :custom
-  (which-key-idle-delay 1.5)
-  (which-key-idle-secondary-delay 0.25)
-  (which-key-add-column-padding 1)
-  (which-key-max-description-length 40))
-
 ;; Precise/smoother scrolling
 (unless (and (eq window-system 'mac)
              (bound-and-true-p mac-carbon-version-string))
@@ -302,6 +293,9 @@
   (compile-angel-on-load-mode 1)
   )
 
+;;; on.el -- Hooks for faster startup
+
+(use-package on :ensure t)
 
 ;;; THEMES
 

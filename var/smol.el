@@ -30,6 +30,18 @@
          ("C-M-$" . jinx-languages)))
 
 
+;;; Which Key
+
+(use-package which-key :ensure t ; builtin
+  :commands which-key-mode
+  :hook (after-init . which-key-mode)
+  :custom
+  (which-key-idle-delay 1.5)
+  (which-key-idle-secondary-delay 0.25)
+  (which-key-add-column-padding 1)
+  (which-key-max-description-length 40))
+
+
 ;;; move to the beginning of comment, indentation, line (move where I mean)
 
 (use-package mwim :ensure t)
