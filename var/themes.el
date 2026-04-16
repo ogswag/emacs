@@ -1,6 +1,8 @@
 ;;; themes.el --- load themes -*- no-byte-compile: t; lexical-binding: t; -*-
 ;;; CODE:
 
+(setq custom-safe-themes t) ; treat all custom themes as safe
+
 ;;; Themes
 (use-package doom-modeline :ensure t
   :config (doom-modeline-mode t))
@@ -59,4 +61,24 @@
 ;; ;; Run the check every N seconds
 ;; (run-at-time nil 300 #'my/set-theme-by-time)
 
-(load-theme 'doom-flatwhite t)
+(use-package auto-dark
+  :ensure t
+  :demand t
+  :custom
+  (auto-dark-themes '((moe-dark) ; dark
+                      (doom-flatwhite) ; light
+                      ))
+  (auto-dark-polling-interval-seconds 5)
+  (auto-dark-allow-osascript t)
+  (auto-dark-allow-powershell nil)
+  ;; (auto-dark-detection-method nil) ;; dangerous to be set manually
+  :hook
+  (auto-dark-dark-mode
+   . (lambda ()
+       ;; something to execute when dark mode is detected
+       ))
+  (auto-dark-light-mode
+   . (lambda ()
+       ;; something to execute when light mode is detected
+       ))
+  :init (auto-dark-mode))

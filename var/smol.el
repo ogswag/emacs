@@ -41,6 +41,11 @@
   (which-key-add-column-padding 1)
   (which-key-max-description-length 40))
 
+;;; Stillnes mode
+
+(use-package stillness-mode :ensure t :demand t
+  :config (stillness-mode))
+
 
 ;;; move to the beginning of comment, indentation, line (move where I mean)
 
