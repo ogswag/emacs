@@ -92,7 +92,7 @@
 ;;; Python
 (defun my/setup-python-mode ()
   "Setup my personal setup for Python mode"
-  (setq-local tab-width 8)
+  (setq-local tab-width 4)
   (setq-local indent-tabs-mode t)     ; Use tabs, not spaces
   (setq-local fill-column 120))
 (add-hook 'python-mode-hook 'my/setup-python-mode)
@@ -138,6 +138,10 @@
 (use-package haskell-mode :ensure t
   :commands haskell-mode
   :mode ("\\.hs\\'" . haskell-mode))
+
+;;; YAML
+(use-package yaml-mode :ensure t
+  :defer t)
 
 ;;; GNU Octave
 (add-to-list 'auto-mode-alist '("\\.m\\'". octave-mode))

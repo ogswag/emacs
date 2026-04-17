@@ -13,7 +13,7 @@
 
 (load custom-file 'noerror 'no-message)
 
-(setq display-buffer-base-action '((display-buffer-reuse-window display-buffer-use-some-window)))
+;; (setq display-buffer-base-action '((display-buffer-reuse-window display-buffer-use-some-window)))
 
 (with-eval-after-load 'ibuffer
   (define-key ibuffer-mode-map [mouse-1] 'ibuffer-mouse-visit-buffer))
@@ -72,9 +72,9 @@
   (when (member "Consolas" (font-family-list))
     (set-frame-font "Consolas" t t)))
  ((eq system-type 'darwin) ; macOS
-  (when (member "Pragmasevka" (font-family-list))
-    (set-frame-font "Pragmasevka 16" t t)
-    (set-face-attribute 'fixed-pitch nil :family "Pragmasevka")
+  (when (member "Sudo Var" (font-family-list))
+    (set-frame-font "Sudo Var 14" t t)
+    (set-face-attribute 'fixed-pitch nil :family "Sudo Var")
     (set-face-attribute 'variable-pitch nil :family "Verdana")))
  ((eq system-type 'gnu/linux)
   (when (member "JetBrains Mono" (font-family-list))
@@ -299,7 +299,7 @@
 
 ;;; THEMES
 
-(load (expand-file-name "themes.el" user-emacs-directory) t t)
+(load (expand-file-name "ui.el" user-emacs-directory) t t)
 
 
 ;;; Treesitter
@@ -543,7 +543,7 @@
 
   ;; Aggressive asynchronous that yield instantaneous results. (suitable for
   ;; high-performance systems.)
-  (setq consult-async-input-debouncex 0.02
+  (setq consult-async-input-debounce 0.02
         consult-async-input-throttle 0.05
         consult-async-refresh-delay 0.02)
 
