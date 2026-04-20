@@ -22,6 +22,9 @@
 (use-package doom-themes :ensure t
   :defer t)
 
+(use-package aircon-theme :ensure t
+  :defer t)
+
 (setq modus-themes-italic-constructs nil
       modus-themes-bold-constructs nil
       modus-themes-disable-other-themes t)
@@ -61,12 +64,15 @@
 ;; ;; Run the check every N seconds
 ;; (run-at-time nil 300 #'my/set-theme-by-time)
 
+;; (custom-theme-set-faces 'aircon-theme
+;;                         '(font-lock-comment-face ((t (:foreground "#3D9A8C" :inherit italic)))))
+
 (use-package auto-dark
   :ensure t
   :demand t
   :custom
   (auto-dark-themes '((doom-solarized-dark) ; dark
-                      (doom-flatwhite) ; light
+                      (doom-solarized-light) ; light
                       ))
   (auto-dark-polling-interval-seconds 5)
   (auto-dark-allow-powershell nil)
@@ -77,19 +83,17 @@
        ;; something to execute when dark mode is detected
        ))
   (auto-dark-light-mode
-   . (lambda ()
-       ;; something to execute when light mode is detected
-       )))
+   . (lambda () )))
+
 (unless (eq window-system 'mac)
   (setq-default auto-dark-allow-osascript t))
-(auto-dark-mode t)
+
+(add-hook 'on-init-ui-hook #'auto-dark-mode)
 
 (use-package solaire-mode :ensure t
   :defer t)
 
 (add-hook 'on-init-ui-hook #'solaire-global-mode)
-
-(load (expand-file-name "popup.el" user-emacs-directory) t t)
 
 (use-package pos-tip :ensure t)
 (setq pos-tip-internal-border-width 6

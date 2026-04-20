@@ -29,6 +29,12 @@
              elisp-refs-special
              elisp-refs-symbol))
 
+
+;;; Support for Dockerfile files.
+;;
+(use-package dockerfile-mode :ensure t
+  :commands dockerfile-mode
+  :mode ("Dockerfile\\'" . dockerfile-mode))
 ;;; Git files support (.gitconfig, .gitignore, .gitattributes...)
 (use-package git-modes :ensure t
   :commands (gitattributes-mode
@@ -97,6 +103,22 @@
   (setq-local fill-column 120))
 (add-hook 'python-mode-hook 'my/setup-python-mode)
 (add-hook 'python-ts-mode-hook 'my/setup-python-mode)
+
+(use-package uv
+  :load-path "~/.emacs.d/var/packlocal"
+  :bind ("C-c u" . uv))
+
+;;; Go
+(use-package go-mode :ensure t
+  :commands go-mode
+  :mode ("\\.go\\'" . go-mode))
+
+;;; Rust
+(use-package rust-mode :ensure t
+  :commands rust-mode
+  :mode ("\\.rs\\'" . rust-mode)
+  :custom
+  (rust-indent-offset 2))
 
 ;;; Major mode for editing crontab files
 (use-package crontab-mode :ensure t
@@ -309,3 +331,28 @@
 ;; Apply to existing buffers via hooks
 (add-hook 'c-mode-hook 'my/setup-c-style)
 (add-hook 'c++-mode-hook 'my/setup-c-style)
+
+;;; TSX
+(use-package jtsx
+  :ensure t
+  :mode (("\\.jsx?\\'" . jtsx-jsx-mode))
+  :commands jtsx-install-treesit-language
+  :hook ((jtsx-jsx-mode . hs-minor-mode)
+         (jtsx-tsx-mode . hs-minor-mode)
+         (jtsx-typescript-mode . hs-minor-mode))
+  :custom
+  ;; Optional customizations
+  (js-indent-level 4)
+  (typescript-ts-mode-indent-offset 4)
+  ;; (jtsx-switch-indent-offset 0)
+  ;; (jtsx-indent-statement-block-regarding-standalone-parent nil)
+  (jtsx-jsx-element-move-allow-step-out t)
+  (jtsx-enable-jsx-electric-closing-element t)
+  (jtsx-enable-electric-open-newline-between-jsx-element-tags t)
+  ;; (jtsx-enable-jsx-element-tags-auto-sync nil)
+  (jtsx-enable-all-syntax-highlighting-features ))
+
+(use-package typescript-mode
+  :ensure nil
+  :mode (("\\.tsx\\'" . typescript-mode)
+         ("\\.ts\\'" . typescript-mode)))

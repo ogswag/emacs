@@ -1,7 +1,5 @@
-;;; complete.el --- completion in Emacs -*- no-byte-compile: t; lexical-binding: t; -*-
+;;; completion.el --- completion in Emacs -*- no-byte-compile: t; lexical-binding: t; -*-
 ;;; CODE:
-
-;;; complete.el --- completion in Emacs -*- lexical-binding: t; -*-
 
 (defcustom +corfu-want-ret-to-confirm t
   "Configure how the user expects RET to behave.
@@ -62,8 +60,7 @@ If any return non-nil, `corfu-auto' will not invoke as-you-type completion."
 ;;
 ;;; Packages
 
-(use-package corfu
-  :hook (on-first-input-hook . global-corfu-mode)
+(use-package corfu :ensure t
   :config
   (setq corfu-auto t
         global-corfu-modes
@@ -151,6 +148,7 @@ See `+corfu-want-minibuffer-completion'."
        (remove-hook 'completion-at-point-functions #'ispell-completion-at-point t))))
   (advice-add #'ispell-completion-at-point :around #'+corfu--auto-disable-ispell-capf))
 
+(add-hook 'on-first-file-hook #'global-corfu-mode)
 
 (use-package corfu-auto
   :ensure nil

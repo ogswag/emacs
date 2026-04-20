@@ -13,7 +13,7 @@
 
 (load custom-file 'noerror 'no-message)
 
-;; (setq display-buffer-base-action '((display-buffer-reuse-window display-buffer-use-some-window)))
+(setq display-buffer-base-action '((display-buffer-reuse-window display-buffer-use-some-window)))
 
 (with-eval-after-load 'ibuffer
   (define-key ibuffer-mode-map [mouse-1] 'ibuffer-mouse-visit-buffer))
@@ -72,9 +72,9 @@
   (when (member "Consolas" (font-family-list))
     (set-frame-font "Consolas" t t)))
  ((eq system-type 'darwin) ; macOS
-  (when (member "Sudo Var" (font-family-list))
-    (set-frame-font "Sudo Var 14" t t)
-    (set-face-attribute 'fixed-pitch nil :family "Sudo Var")
+  (when (member "iosevka ubm" (font-family-list))
+    (set-frame-font "iosevka ubm 14" t t)
+    (set-face-attribute 'fixed-pitch nil :family "iosevka ubm")
     (set-face-attribute 'variable-pitch nil :family "Verdana")))
  ((eq system-type 'gnu/linux)
   (when (member "JetBrains Mono" (font-family-list))
@@ -98,7 +98,7 @@
                                        "~@" "[||]" "|]" "[|" "|}" "{|" "[<" ">]" "|>" "<|" "||>" "<||"
                                        "|||>" "<|||" "<|>" "..." ".." ".=" "..<" ".?" "::" ":::" ":=" "::="
                                        ":?" ":?>" "//" "///" "/*" "*/" "/=" "//=" "/==" "@_" "__" "???"
-                                       "<:<" ";;;"))
+                                       "<:<" ";;;" "*=" ))
   (global-ligature-mode t))
 
 ;; Track changes in the window configuration, allowing undoing actions such as
@@ -296,11 +296,6 @@
 ;;; on.el -- Hooks for faster startup
 
 (use-package on :ensure t)
-
-;;; THEMES
-
-(load (expand-file-name "ui.el" user-emacs-directory) t t)
-
 
 ;;; Treesitter
 
@@ -558,8 +553,6 @@
    :preview-key '(:debounce 0.4 any))
   (setq consult-narrow-key "<"))
 
-
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
 ;;     ▌ ▐· ▄▄▄· ▄▄▄  ▪        ▄• ▄▌.▄▄ ·      ▄▄·        ▐ ▄ ·▄▄▄▪   ▄▄ •     ·▄▄▄▪  ▄▄▌  ▄▄▄ ..▄▄ ·
@@ -570,10 +563,16 @@
 ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(load (expand-file-name "ui.el" module-directory) t t)
+(load (expand-file-name "popup.el" module-directory) t t)
+
 (load (expand-file-name "smol.el" user-emacs-directory) t t)
 (load (expand-file-name "lang.el" user-emacs-directory) t t)
-(load (expand-file-name "complete.el" user-emacs-directory) t t)
+(load (expand-file-name "completion.el" module-directory) t t)
 ;; (load (expand-file-name "orgmode.el" user-emacs-directory) t t)
 ;; (load (expand-file-name "latex-editor.el" user-emacs-directory) t t)
+
+;; load modules
+(load (expand-file-name "treemacs.el" module-directory) t t)
 
 (load (expand-file-name "keyboard.el" user-emacs-directory) t t)
