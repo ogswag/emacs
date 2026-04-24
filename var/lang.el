@@ -35,37 +35,6 @@
 (use-package dockerfile-mode :ensure t
   :commands dockerfile-mode
   :mode ("Dockerfile\\'" . dockerfile-mode))
-;;; Git files support (.gitconfig, .gitignore, .gitattributes...)
-(use-package git-modes :ensure t
-  :commands (gitattributes-mode
-             gitconfig-mode
-             gitignore-mode)
-  :mode (("/\\.gitignore\\'"       . gitignore-mode)
-         ("/info/exclude\\'"       . gitignore-mode)
-         ("/git/ignore\\'"         . gitignore-mode)
-         ("/.gitignore_global\\'"  . gitignore-mode)  ; jc-dotfiles
-
-         ("/\\.gitconfig\\'"       . gitconfig-mode)
-         ("/\\.git/config\\'"      . gitconfig-mode)
-         ("/modules/.*/config\\'"  . gitconfig-mode)
-         ("/git/config\\'"         . gitconfig-mode)
-         ("/\\.gitmodules\\'"      . gitconfig-mode)
-         ("/etc/gitconfig\\'"      . gitconfig-mode)
-
-         ("/\\.gitattributes\\'"   . gitattributes-mode)
-         ("/info/attributes\\'"    . gitattributes-mode)
-         ("/git/attributes\\'"     . gitattributes-mode)))
-
-;;;; Git diffs (diff-hl)
-(use-package diff-hl
-  :commands (diff-hl-mode
-             global-diff-hl-mode)
-  :hook (prog-mode . diff-hl-mode)
-  :init
-  (setq diff-hl-flydiff-delay 0.4)  ; Faster
-  (setq diff-hl-show-staged-changes nil)  ; Realtime feedback
-  (setq diff-hl-update-async t)  ; Do not block Emacs
-  (setq diff-hl-global-modes '(not pdf-view-mode image-mode)))
 
 ;;; Support for Gnuplot files
 (use-package gnuplot :ensure t
@@ -162,8 +131,7 @@
   :mode ("\\.hs\\'" . haskell-mode))
 
 ;;; YAML
-(use-package yaml-mode :ensure t
-  :defer t)
+(use-package yaml-mode :ensure t)
 
 ;;; GNU Octave
 (add-to-list 'auto-mode-alist '("\\.m\\'". octave-mode))
@@ -335,7 +303,9 @@
 ;;; TSX
 (use-package jtsx
   :ensure t
-  :mode (("\\.jsx?\\'" . jtsx-jsx-mode))
+  :mode (("\\.tsx\\'" . jtsx-tsx-mode)
+         ("\\.ts\\'" . jtsx-tsx-mode)
+         ("\\.jsx?\\'" . jtsx-jsx-mode))
   :commands jtsx-install-treesit-language
   :hook ((jtsx-jsx-mode . hs-minor-mode)
          (jtsx-tsx-mode . hs-minor-mode)
@@ -352,7 +322,6 @@
   ;; (jtsx-enable-jsx-element-tags-auto-sync nil)
   (jtsx-enable-all-syntax-highlighting-features ))
 
-(use-package typescript-mode
-  :ensure nil
-  :mode (("\\.tsx\\'" . typescript-mode)
-         ("\\.ts\\'" . typescript-mode)))
+(use-package typescript-mode :ensure t)
+;; :mode (("\\.tsx\\'" . typescript-mode)
+;;        ("\\.ts\\'" . typescript-mode)))

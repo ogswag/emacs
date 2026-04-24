@@ -1,4 +1,4 @@
-;; A file and project explorer for Emacs that displays a structured tree
+;; A file and project explorer for Emacs that displays a structured tree  -*- lexical-binding: t; -*-
 ;; layout, similar to file browsers in modern IDEs. It functions as a sidebar
 ;; in the left window, providing a persistent view of files, projects, and
 ;; other elements.

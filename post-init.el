@@ -13,6 +13,13 @@
 
 (load custom-file 'noerror 'no-message)
 
+;; Disable the right Option key as a modifier so macOS can use it for special chars
+(setq ns-right-option-modifier 'none)
+;; (Optional) Keep the left Option key as the standard Meta key
+(setq ns-alternate-modifier 'meta)
+(setq ns-command-modifier 'meta)
+(setq ns-function-modifier 'control)
+
 (setq display-buffer-base-action '((display-buffer-reuse-window display-buffer-use-some-window)))
 
 (with-eval-after-load 'ibuffer
@@ -36,8 +43,9 @@
 (use-package visual-line-mode :ensure nil
   :hook (LaTeX-mode latex-mode tex-mode eshell-mode text-mode helpful-mode help-mode))
 
-;; (global-visual-wrap-prefix-mode t)
+(global-visual-wrap-prefix-mode t)
 (global-goto-address-mode t)
+(global-auto-revert-mode t)
 
 ;; Display the current line and column numbers in the mode line
 (setq line-number-mode t)
@@ -73,8 +81,8 @@
     (set-frame-font "Consolas" t t)))
  ((eq system-type 'darwin) ; macOS
   (when (member "iosevka ubm" (font-family-list))
-    (set-frame-font "iosevka ubm 14" t t)
-    (set-face-attribute 'fixed-pitch nil :family "iosevka ubm")
+    (set-frame-font "iosevka ubm Semi-Condensed 13" t t)
+    (set-face-attribute 'fixed-pitch nil :family "iosevka ubm Semi-Condensed")
     (set-face-attribute 'variable-pitch nil :family "Verdana")))
  ((eq system-type 'gnu/linux)
   (when (member "JetBrains Mono" (font-family-list))
@@ -569,6 +577,7 @@
 (load (expand-file-name "smol.el" user-emacs-directory) t t)
 (load (expand-file-name "lang.el" user-emacs-directory) t t)
 (load (expand-file-name "completion.el" module-directory) t t)
+(load (expand-file-name "git.el" module-directory) t t)
 ;; (load (expand-file-name "orgmode.el" user-emacs-directory) t t)
 ;; (load (expand-file-name "latex-editor.el" user-emacs-directory) t t)
 

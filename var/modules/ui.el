@@ -71,8 +71,8 @@
   :ensure t
   :demand t
   :custom
-  (auto-dark-themes '((doom-solarized-dark) ; dark
-                      (doom-solarized-light) ; light
+  (auto-dark-themes '((doom-solarized-dark-high-contrast) ; dark
+                      (doom-oksolar-light) ; light
                       ))
   (auto-dark-polling-interval-seconds 5)
   (auto-dark-allow-powershell nil)
