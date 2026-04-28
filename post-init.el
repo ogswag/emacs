@@ -14,11 +14,13 @@
 (load custom-file 'noerror 'no-message)
 
 ;; Disable the right Option key as a modifier so macOS can use it for special chars
-(setq ns-right-option-modifier 'none)
+(setq mac-option-modifier 'meta)
+(setq mac-right-option-modifier 'none)
 ;; (Optional) Keep the left Option key as the standard Meta key
-(setq ns-alternate-modifier 'meta)
-(setq ns-command-modifier 'meta)
-(setq ns-function-modifier 'control)
+;; (setq mac-alternate-modifier 'meta)
+(setq mac-command-modifier 'meta)
+(setq mac-right-command-modifier 'super)
+;; (setq mac-function-modifier 'control)
 
 (setq display-buffer-base-action '((display-buffer-reuse-window display-buffer-use-some-window)))
 
@@ -81,7 +83,7 @@
     (set-frame-font "Consolas" t t)))
  ((eq system-type 'darwin) ; macOS
   (when (member "iosevka ubm" (font-family-list))
-    (set-frame-font "iosevka ubm Semi-Condensed 13" t t)
+    (set-frame-font "iosevka ubm Semi-Condensed 15" t t)
     (set-face-attribute 'fixed-pitch nil :family "iosevka ubm Semi-Condensed")
     (set-face-attribute 'variable-pitch nil :family "Verdana")))
  ((eq system-type 'gnu/linux)
@@ -574,14 +576,14 @@
 (load (expand-file-name "ui.el" module-directory) t t)
 (load (expand-file-name "popup.el" module-directory) t t)
 
+(load (expand-file-name "input.el" module-directory) t t)
+(load (expand-file-name "git.el" module-directory) t t)
 (load (expand-file-name "smol.el" user-emacs-directory) t t)
 (load (expand-file-name "lang.el" user-emacs-directory) t t)
+
 (load (expand-file-name "completion.el" module-directory) t t)
-(load (expand-file-name "git.el" module-directory) t t)
+
 ;; (load (expand-file-name "orgmode.el" user-emacs-directory) t t)
 ;; (load (expand-file-name "latex-editor.el" user-emacs-directory) t t)
 
-;; load modules
 (load (expand-file-name "treemacs.el" module-directory) t t)
-
-(load (expand-file-name "keyboard.el" user-emacs-directory) t t)
